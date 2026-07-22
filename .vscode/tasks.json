@@ -4,13 +4,9 @@
         {
             "label": "Run app (Windows)",
             "type": "shell",
-            "command": "dotnet",
-            "args": [
-                "build",
-                "src/SimpleGymDiary.App",
-                "-f", "net10.0-windows10.0.19041.0",
-                "-t:Run"
-            ],
+            // -t:Run breaks on paths with spaces (MSB3073/9009: unquoted RunCommand),
+            // so build and launch the exe explicitly.
+            "command": "dotnet build src/SimpleGymDiary.App -f net10.0-windows10.0.19041.0; if ($LASTEXITCODE -eq 0) { Start-Process '${workspaceFolder}\\src\\SimpleGymDiary.App\\bin\\Debug\\net10.0-windows10.0.19041.0\\win-x64\\SimpleGymDiary.App.exe' }",
             "group": { "kind": "build", "isDefault": true },
             "problemMatcher": "$msCompile"
         },
