@@ -15,15 +15,21 @@ public partial class SettingsViewModel : ObservableObject
     private AppSettings _settings = new();
     private bool _loading = true;
 
-    public SettingsViewModel(AppDatabase db) => _db = db;
+    public SettingsViewModel(AppDatabase db)
+    {
+        _db = db;
+        RepMinText = RepMaxText = IncrementText = RepIncrementText = SetCountText = "";
+    }
 
-    [ObservableProperty] private int _unitIndex;              // 0 = kg, 1 = lbs
-    [ObservableProperty] private string _repMinText = "";
-    [ObservableProperty] private string _repMaxText = "";
-    [ObservableProperty] private string _incrementText = "";
-    [ObservableProperty] private string _repIncrementText = "";
-    [ObservableProperty] private string _setCountText = "";
-    [ObservableProperty] private int _countingSetRuleIndex;   // matches CountingSetRule order
+    /// <summary>0 = kg, 1 = lbs.</summary>
+    [ObservableProperty] public partial int UnitIndex { get; set; }
+    [ObservableProperty] public partial string RepMinText { get; set; }
+    [ObservableProperty] public partial string RepMaxText { get; set; }
+    [ObservableProperty] public partial string IncrementText { get; set; }
+    [ObservableProperty] public partial string RepIncrementText { get; set; }
+    [ObservableProperty] public partial string SetCountText { get; set; }
+    /// <summary>Matches CountingSetRule order.</summary>
+    [ObservableProperty] public partial int CountingSetRuleIndex { get; set; }
 
     public async Task LoadAsync()
     {

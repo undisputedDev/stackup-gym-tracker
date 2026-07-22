@@ -10,16 +10,20 @@ public partial class WorkoutHomeViewModel : ObservableObject
 {
     private readonly AppDatabase _db;
 
-    public WorkoutHomeViewModel(AppDatabase db) => _db = db;
+    public WorkoutHomeViewModel(AppDatabase db)
+    {
+        _db = db;
+        InProgressText = "";
+    }
 
     public ObservableCollection<SplitCardViewModel> Splits { get; } = [];
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasInProgress))]
-    private Session? _inProgressSession;
+    public partial Session? InProgressSession { get; set; }
 
     [ObservableProperty]
-    private string _inProgressText = "";
+    public partial string InProgressText { get; set; }
 
     public bool HasInProgress => InProgressSession is not null;
 

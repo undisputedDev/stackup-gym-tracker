@@ -19,31 +19,39 @@ public partial class StatsViewModel : ObservableObject
     private readonly AppDatabase _db;
     private WeightUnit _unit;
 
-    public StatsViewModel(AppDatabase db) => _db = db;
+    public StatsViewModel(AppDatabase db)
+    {
+        _db = db;
+        RangeIndex = 2;
+        Series = [];
+        XAxes = [];
+        YAxes = [];
+        EmptyText = "Pick an exercise to see your progression.";
+    }
 
     public ObservableCollection<Exercise> Exercises { get; } = [];
 
     [ObservableProperty]
-    private Exercise? _selectedExercise;
+    public partial Exercise? SelectedExercise { get; set; }
 
     /// <summary>0 = 3 months, 1 = 1 year, 2 = all.</summary>
     [ObservableProperty]
-    private int _rangeIndex = 2;
+    public partial int RangeIndex { get; set; }
 
     [ObservableProperty]
-    private ISeries[] _series = [];
+    public partial ISeries[] Series { get; set; }
 
     [ObservableProperty]
-    private Axis[] _xAxes = [];
+    public partial Axis[] XAxes { get; set; }
 
     [ObservableProperty]
-    private Axis[] _yAxes = [];
+    public partial Axis[] YAxes { get; set; }
 
     [ObservableProperty]
-    private bool _hasData;
+    public partial bool HasData { get; set; }
 
     [ObservableProperty]
-    private string _emptyText = "Pick an exercise to see your progression.";
+    public partial string EmptyText { get; set; }
 
     public async Task LoadAsync()
     {

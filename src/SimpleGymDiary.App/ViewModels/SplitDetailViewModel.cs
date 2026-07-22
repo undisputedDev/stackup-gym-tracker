@@ -12,13 +12,17 @@ public partial class SplitDetailViewModel : ObservableObject
     private readonly AppDatabase _db;
     private Split? _split;
 
-    public SplitDetailViewModel(AppDatabase db) => _db = db;
+    public SplitDetailViewModel(AppDatabase db)
+    {
+        _db = db;
+        Name = "";
+    }
 
     [ObservableProperty]
-    private int _splitId;
+    public partial int SplitId { get; set; }
 
     [ObservableProperty]
-    private string _name = "";
+    public partial string Name { get; set; }
 
     public ObservableCollection<Exercise> Exercises { get; } = [];
 

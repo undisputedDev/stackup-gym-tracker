@@ -18,39 +18,46 @@ public partial class ExerciseEditViewModel : ObservableObject
     private readonly AppDatabase _db;
     private Exercise _exercise = new();
 
-    public ExerciseEditViewModel(AppDatabase db) => _db = db;
+    public ExerciseEditViewModel(AppDatabase db)
+    {
+        _db = db;
+        PageTitle = "New exercise";
+        Name = "";
+        RepMinText = RepMaxText = IncrementText = RepIncrementText = "";
+        RepMinPlaceholder = RepMaxPlaceholder = IncrementPlaceholder = RepIncrementPlaceholder = "";
+    }
 
     [ObservableProperty]
-    private int _exerciseId;
+    public partial int ExerciseId { get; set; }
 
     /// <summary>When creating from a split's Add flow, the new exercise is appended to this split.</summary>
     [ObservableProperty]
-    private int _splitId;
+    public partial int SplitId { get; set; }
 
     [ObservableProperty]
-    private string _pageTitle = "New exercise";
+    public partial string PageTitle { get; set; }
 
     [ObservableProperty]
-    private string _name = "";
+    public partial string Name { get; set; }
 
     /// <summary>0 = weight-based, 1 = rep-based (bodyweight); matches picker index.</summary>
     [ObservableProperty]
-    private int _trackingTypeIndex;
+    public partial int TrackingTypeIndex { get; set; }
 
     [ObservableProperty]
-    private bool _isExisting;
+    public partial bool IsExisting { get; set; }
 
     // Override fields (empty = use global default)
-    [ObservableProperty] private string _repMinText = "";
-    [ObservableProperty] private string _repMaxText = "";
-    [ObservableProperty] private string _incrementText = "";
-    [ObservableProperty] private string _repIncrementText = "";
+    [ObservableProperty] public partial string RepMinText { get; set; }
+    [ObservableProperty] public partial string RepMaxText { get; set; }
+    [ObservableProperty] public partial string IncrementText { get; set; }
+    [ObservableProperty] public partial string RepIncrementText { get; set; }
 
     // Placeholders showing the effective global defaults
-    [ObservableProperty] private string _repMinPlaceholder = "";
-    [ObservableProperty] private string _repMaxPlaceholder = "";
-    [ObservableProperty] private string _incrementPlaceholder = "";
-    [ObservableProperty] private string _repIncrementPlaceholder = "";
+    [ObservableProperty] public partial string RepMinPlaceholder { get; set; }
+    [ObservableProperty] public partial string RepMaxPlaceholder { get; set; }
+    [ObservableProperty] public partial string IncrementPlaceholder { get; set; }
+    [ObservableProperty] public partial string RepIncrementPlaceholder { get; set; }
 
     public async Task LoadAsync()
     {

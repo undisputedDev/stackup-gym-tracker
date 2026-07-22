@@ -14,13 +14,17 @@ public partial class SessionViewModel : ObservableObject
 {
     private readonly AppDatabase _db;
 
-    public SessionViewModel(AppDatabase db) => _db = db;
+    public SessionViewModel(AppDatabase db)
+    {
+        _db = db;
+        Title = "";
+    }
 
     [ObservableProperty]
-    private int _sessionId;
+    public partial int SessionId { get; set; }
 
     [ObservableProperty]
-    private string _title = "";
+    public partial string Title { get; set; }
 
     public ObservableCollection<SessionEntryViewModel> Entries { get; } = [];
 
@@ -75,7 +79,9 @@ public partial class SessionEntryViewModel : ObservableObject
         _unit = settings.Unit;
         _eff = EffectiveExerciseSettings.Resolve(exercise, settings);
 
-        _weightText = entry.WeightKg is { } w ? UnitConverter.Format(w, _unit) : "";
+        WeightText = entry.WeightKg is { } w ? UnitConverter.Format(w, _unit) : "";
+        MarkGlyph = "=";
+        MarkColor = Colors.Gray;
         foreach (var reps in RepsSerializer.Parse(entry.RepsPerSet))
             Sets.Add(new SetViewModel(this, reps));
 
@@ -105,7 +111,7 @@ public partial class SessionEntryViewModel : ObservableObject
     // ---- Weight ----
 
     [ObservableProperty]
-    private string _weightText = "";
+    public partial string WeightText { get; set; }
 
     partial void OnWeightTextChanged(string value)
     {
@@ -166,13 +172,13 @@ public partial class SessionEntryViewModel : ObservableObject
     // ---- Marking ----
 
     [ObservableProperty]
-    private string _markGlyph = "=";
+    public partial string MarkGlyph { get; set; }
 
     [ObservableProperty]
-    private Color _markColor = Colors.Gray;
+    public partial Color MarkColor { get; set; }
 
     [ObservableProperty]
-    private bool _isManualMark;
+    public partial bool IsManualMark { get; set; }
 
     [RelayCommand]
     private void CycleMark()
@@ -226,13 +232,13 @@ public partial class SetViewModel : ObservableObject
     public SetViewModel(SessionEntryViewModel parent, int reps)
     {
         _parent = parent;
-        _repsText = reps > 0 ? reps.ToString() : "";
+        RepsText = reps > 0 ? reps.ToString() : "";
     }
 
     public int Reps => int.TryParse(RepsText, out var r) && r > 0 ? r : 0;
 
     [ObservableProperty]
-    private string _repsText = "";
+    public partial string RepsText { get; set; }
 
     partial void OnRepsTextChanged(string value) => _parent.OnRepsChanged();
 }
