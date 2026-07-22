@@ -55,8 +55,9 @@ for (var w = weeks - 1; w >= 0; w--)
     await SimulateSessionAsync(lower.Id, lastLower.AddDays(-7 * w));
 }
 
-var rows = await db.GetExportRowsAsync();
-Console.WriteLine($"Done: {weeks * 2} sessions, {rows.Count} exercise entries.");
+var sessionCount = (await db.GetSessionsForSplitAsync(upper.Id)).Count
+                 + (await db.GetSessionsForSplitAsync(lower.Id)).Count;
+Console.WriteLine($"Done: {sessionCount} sessions seeded.");
 await db.CloseAsync();
 return;
 

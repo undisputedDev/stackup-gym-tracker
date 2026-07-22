@@ -1,9 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using SimpleGymDiary.Core.Data;
 using SimpleGymDiary.Core.Entities;
 using SimpleGymDiary.Core.Enums;
-using SimpleGymDiary.Core.Export;
 using SimpleGymDiary.Core.Units;
 
 namespace SimpleGymDiary.App.ViewModels;
@@ -110,24 +108,4 @@ public partial class SettingsViewModel : ObservableObject
             _ = _db.SaveSettingsAsync(_settings);
     }
 
-    [RelayCommand]
-    private async Task ExportCsvAsync()
-    {
-        var rows = await _db.GetExportRowsAsync();
-        if (rows.Count == 0)
-        {
-            await Shell.Current.DisplayAlertAsync("Nothing to export", "Complete a session first.", "OK");
-            return;
-        }
-
-        var csv = CsvExporter.Export(rows);
-        var path = Path.Combine(FileSystem.CacheDirectory, $"gym-diary-{DateTime.Now:yyyy-MM-dd}.csv");
-        await File.WriteAllTextAsync(path, csv);
-
-        await Share.Default.RequestAsync(new ShareFileRequest
-        {
-            Title = "Export gym diary",
-            File = new ShareFile(path, "text/csv"),
-        });
-    }
 }

@@ -267,7 +267,7 @@ public class AppDatabase
         await _db.ExecuteAsync("DELETE FROM Session WHERE Id = ?", sessionId);
     }
 
-    // ---- Stats & export ----
+    // ---- Stats ----
 
     public Task<List<ExerciseHistoryPoint>> GetExerciseHistoryAsync(int exerciseId, DateTime? sinceUtc = null) =>
         _db.QueryAsync<ExerciseHistoryPoint>(
@@ -278,17 +278,4 @@ public class AppDatabase
             WHERE se.ExerciseId = ? AND s.CompletedAtUtc IS NOT NULL AND s.StartedAtUtc >= ?
             ORDER BY s.StartedAtUtc
             """, exerciseId, sinceUtc ?? DateTime.MinValue);
-
-    public Task<List<ExportRow>> GetExportRowsAsync() =>
-        _db.QueryAsync<ExportRow>(
-            """
-            SELECT s.StartedAtUtc, sp.Name AS SplitName, e.Name AS ExerciseName,
-                   e.TrackingType, se.WeightKg, se.RepsPerSet, se.Mark
-            FROM SessionEntry se
-            JOIN Session s ON s.Id = se.SessionId
-            JOIN Split sp ON sp.Id = s.SplitId
-            JOIN Exercise e ON e.Id = se.ExerciseId
-            WHERE s.CompletedAtUtc IS NOT NULL
-            ORDER BY s.StartedAtUtc, se.OrderInSession
-            """);
 }

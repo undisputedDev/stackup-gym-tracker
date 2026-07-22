@@ -24,7 +24,6 @@ killed mid-session — sessions are resumable).
 - **Two tracking types**: weight-based (machines/barbell) and rep-based (bodyweight)
 - **Global defaults + per-exercise overrides** for rep range, increments, counting-set rule
 - **Stats**: progression chart per exercise (LiveCharts2), 3M / 1Y / All ranges
-- **CSV export**: one row per set, opens directly in Excel
 - **kg / lbs** display (storage is always kg)
 - Local-only (SQLite), no account, no ads, free
 

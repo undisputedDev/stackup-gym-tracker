@@ -52,14 +52,6 @@
                 </Picker>
             </Border>
 
-            <Label Text="Data" Style="{StaticResource SectionTitle}" />
-            <Button Text="Export history as CSV"
-                    FontFamily="OpenSansSemibold"
-                    HeightRequest="52" CornerRadius="12"
-                    Command="{Binding ExportCsvCommand}" />
-            <Label Text="One row per set — opens directly in Excel."
-                   Style="{StaticResource Hint}" HorizontalOptions="Center" />
-
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

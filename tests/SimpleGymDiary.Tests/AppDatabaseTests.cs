@@ -186,21 +186,6 @@ public sealed class AppDatabaseTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task ExportRows_OnlyCompletedSessions()
-    {
-        var db = await CreateAsync();
-        var splits = await db.GetSplitsAsync();
-
-        var s1 = await db.StartSessionAsync(splits[0].Id, DateTime.UtcNow.AddDays(-3));
-        await db.CompleteSessionAsync(s1.Id, DateTime.UtcNow.AddDays(-3));
-        await db.StartSessionAsync(splits[1].Id, DateTime.UtcNow); // in progress -> excluded
-
-        var rows = await db.GetExportRowsAsync();
-        Assert.Equal(5, rows.Count);
-        Assert.All(rows, r => Assert.Equal("Upper Body", r.SplitName));
-    }
-
-    [Fact]
     public async Task ExerciseHistory_OrderedByDate()
     {
         var db = await CreateAsync();
