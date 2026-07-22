@@ -17,6 +17,22 @@ public partial class App : MauiWinUIApplication
 	public App()
 	{
 		this.InitializeComponent();
+
+#if DEBUG
+		// Log stowed XAML exceptions (0xc000027b) with their managed stack for diagnosis.
+		UnhandledException += (_, e) =>
+		{
+			try
+			{
+				var path = Path.Combine(Microsoft.Maui.Storage.FileSystem.AppDataDirectory, "crash.log");
+				File.AppendAllText(path, $"[{DateTime.Now:O}] {e.Exception}\n\n");
+			}
+			catch
+			{
+				// best-effort logging only
+			}
+		};
+#endif
 	}
 
 	protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();

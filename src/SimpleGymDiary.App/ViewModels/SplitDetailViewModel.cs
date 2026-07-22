@@ -1,4 +1,4 @@
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SimpleGymDiary.Core.Data;
@@ -54,7 +54,7 @@ public partial class SplitDetailViewModel : ObservableObject
 
         const string newOption = "New exercise…";
         var options = candidates.Select(c => c.Name).Append(newOption).ToArray();
-        var choice = await Shell.Current.DisplayActionSheet("Add exercise", "Cancel", null, options);
+        var choice = await Shell.Current.DisplayActionSheetAsync("Add exercise", "Cancel", null, options);
 
         if (choice is null or "Cancel")
             return;
@@ -104,7 +104,7 @@ public partial class SplitDetailViewModel : ObservableObject
     [RelayCommand]
     private async Task ArchiveSplitAsync()
     {
-        var confirmed = await Shell.Current.DisplayAlert("Delete split",
+        var confirmed = await Shell.Current.DisplayAlertAsync("Delete split",
             $"Remove \"{Name}\" from your plan? Completed sessions are kept.", "Delete", "Cancel");
         if (!confirmed)
             return;

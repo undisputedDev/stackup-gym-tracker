@@ -1,4 +1,4 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SimpleGymDiary.Core.Data;
 using SimpleGymDiary.Core.Entities;
@@ -110,7 +110,7 @@ public partial class SettingsViewModel : ObservableObject
         var rows = await _db.GetExportRowsAsync();
         if (rows.Count == 0)
         {
-            await Shell.Current.DisplayAlert("Nothing to export", "Complete a session first.", "OK");
+            await Shell.Current.DisplayAlertAsync("Nothing to export", "Complete a session first.", "OK");
             return;
         }
 

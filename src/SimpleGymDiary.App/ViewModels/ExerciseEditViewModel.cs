@@ -1,4 +1,4 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SimpleGymDiary.Core.Data;
 using SimpleGymDiary.Core.Entities;
@@ -83,7 +83,7 @@ public partial class ExerciseEditViewModel : ObservableObject
     {
         if (string.IsNullOrWhiteSpace(Name))
         {
-            await Shell.Current.DisplayAlert("Missing name", "Please enter an exercise name.", "OK");
+            await Shell.Current.DisplayAlertAsync("Missing name", "Please enter an exercise name.", "OK");
             return;
         }
 
@@ -110,7 +110,7 @@ public partial class ExerciseEditViewModel : ObservableObject
     [RelayCommand]
     private async Task ArchiveAsync()
     {
-        var confirmed = await Shell.Current.DisplayAlert("Delete exercise",
+        var confirmed = await Shell.Current.DisplayAlertAsync("Delete exercise",
             $"Remove \"{Name}\" from all splits? Your history is kept.", "Delete", "Cancel");
         if (!confirmed)
             return;

@@ -37,8 +37,9 @@
                                             <Label Text="{Binding MarkGlyph}" TextColor="White" FontSize="20"
                                                    HorizontalOptions="Center" VerticalOptions="Center" />
                                             <!-- manual-override dot -->
-                                            <Ellipse IsVisible="{Binding IsManualMark}"
-                                                     Fill="White" WidthRequest="6" HeightRequest="6"
+                                            <BoxView IsVisible="{Binding IsManualMark}"
+                                                     Color="White" CornerRadius="3"
+                                                     WidthRequest="6" HeightRequest="6"
                                                      HorizontalOptions="End" VerticalOptions="Start"
                                                      Margin="0,6,6,0" />
                                         </Grid>
@@ -64,42 +65,45 @@
                                             Command="{Binding IncrementWeightCommand}" />
                                 </Grid>
 
-                                <!-- Row 3: rep chips -->
-                                <FlexLayout Direction="Row" Wrap="Wrap" AlignItems="Center">
-                                    <FlexLayout BindableLayout.ItemsSource="{Binding Sets}"
-                                                Direction="Row" Wrap="Wrap" AlignItems="Center">
-                                        <BindableLayout.ItemTemplate>
-                                            <DataTemplate x:DataType="vm:SetViewModel">
-                                                <Border StrokeThickness="1"
-                                                        Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
-                                                        StrokeShape="RoundRectangle 12"
-                                                        Margin="0,0,8,8">
-                                                    <Entry Style="{StaticResource RepChipEntry}"
-                                                           Text="{Binding RepsText}"
-                                                           Placeholder="0" />
-                                                </Border>
-                                            </DataTemplate>
-                                        </BindableLayout.ItemTemplate>
-                                    </FlexLayout>
-                                    <Button Text="+"
+                                <!-- Row 3: rep chips (scroll horizontally if many sets) -->
+                                <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+                                    <ScrollView Orientation="Horizontal"
+                                                HorizontalScrollBarVisibility="Never"
+                                                VerticalOptions="Center">
+                                        <HorizontalStackLayout Spacing="8"
+                                                               BindableLayout.ItemsSource="{Binding Sets}">
+                                            <BindableLayout.ItemTemplate>
+                                                <DataTemplate x:DataType="vm:SetViewModel">
+                                                    <Border StrokeThickness="1"
+                                                            Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
+                                                            StrokeShape="RoundRectangle 12">
+                                                        <Entry Style="{StaticResource RepChipEntry}"
+                                                               Text="{Binding RepsText}"
+                                                               Placeholder="0" />
+                                                    </Border>
+                                                </DataTemplate>
+                                            </BindableLayout.ItemTemplate>
+                                        </HorizontalStackLayout>
+                                    </ScrollView>
+                                    <Button Grid.Column="1"
+                                            Text="+"
                                             FontSize="18"
                                             WidthRequest="44" HeightRequest="44" CornerRadius="12" Padding="0"
-                                            Margin="0,0,8,8"
                                             BackgroundColor="Transparent"
                                             BorderColor="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}"
                                             BorderWidth="1"
                                             TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray300}}"
                                             Command="{Binding AddSetCommand}" />
-                                    <Button Text="−"
+                                    <Button Grid.Column="2"
+                                            Text="−"
                                             FontSize="18"
                                             WidthRequest="44" HeightRequest="44" CornerRadius="12" Padding="0"
-                                            Margin="0,0,0,8"
                                             BackgroundColor="Transparent"
                                             BorderColor="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}"
                                             BorderWidth="1"
                                             TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray300}}"
                                             Command="{Binding RemoveSetCommand}" />
-                                </FlexLayout>
+                                </Grid>
 
                             </VerticalStackLayout>
                         </Border>
