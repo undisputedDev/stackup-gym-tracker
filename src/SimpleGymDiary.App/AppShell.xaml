@@ -3,12 +3,22 @@
     x:Class="SimpleGymDiary.App.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:local="clr-namespace:SimpleGymDiary.App"
-    Title="SimpleGymDiary.App">
+    xmlns:views="clr-namespace:SimpleGymDiary.App.Views"
+    Title="Simple Gym Diary">
 
-    <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
+    <TabBar>
+        <Tab Title="Workout">
+            <ShellContent ContentTemplate="{DataTemplate views:WorkoutHomePage}" Route="workout" />
+        </Tab>
+        <Tab Title="Splits">
+            <ShellContent ContentTemplate="{DataTemplate views:SplitsPage}" Route="splits" />
+        </Tab>
+        <Tab Title="Stats">
+            <ShellContent ContentTemplate="{DataTemplate views:StatsPage}" Route="stats" />
+        </Tab>
+        <Tab Title="Settings">
+            <ShellContent ContentTemplate="{DataTemplate views:SettingsPage}" Route="settings" />
+        </Tab>
+    </TabBar>
 
 </Shell>

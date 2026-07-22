@@ -11,7 +11,8 @@ namespace SimpleGymDiary.Core.Data;
 public class AppDatabase
 {
     private readonly SQLiteAsyncConnection _db;
-    private bool _initialized;
+    private readonly SemaphoreSlim _initLock = new(1, 1);
+    private volatile bool _initialized;
 
     public AppDatabase(string databasePath)
     {
@@ -41,15 +42,26 @@ public class AppDatabase
         if (_initialized)
             return;
 
-        var version = await _db.ExecuteScalarAsync<int>("PRAGMA user_version");
-        while (version < Migrations.Length)
+        await _initLock.WaitAsync();
+        try
         {
-            await Migrations[version](_db);
-            version++;
-            await _db.ExecuteAsync($"PRAGMA user_version = {version}");
-        }
+            if (_initialized)
+                return;
 
-        _initialized = true;
+            var version = await _db.ExecuteScalarAsync<int>("PRAGMA user_version");
+            while (version < Migrations.Length)
+            {
+                await Migrations[version](_db);
+                version++;
+                await _db.ExecuteAsync($"PRAGMA user_version = {version}");
+            }
+
+            _initialized = true;
+        }
+        finally
+        {
+            _initLock.Release();
+        }
     }
 
     /// <summary>Closes the underlying connection (releases the file lock). Used by tests and app shutdown.</summary>

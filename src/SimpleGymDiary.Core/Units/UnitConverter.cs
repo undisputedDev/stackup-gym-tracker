@@ -1,3 +1,4 @@
+using System.Globalization;
 using SimpleGymDiary.Core.Enums;
 
 namespace SimpleGymDiary.Core.Units;
@@ -18,4 +19,17 @@ public static class UnitConverter
         Math.Round(KgToDisplay(kg, unit), 2).ToString("0.##");
 
     public static string UnitLabel(WeightUnit unit) => unit == WeightUnit.Lbs ? "lbs" : "kg";
+
+    /// <summary>
+    /// Culture-tolerant decimal parse: accepts both "57,5" (decimal-comma keyboards)
+    /// and "57.5". Never use raw double.Parse on user input.
+    /// </summary>
+    public static bool TryParseFlexible(string? text, out double value)
+    {
+        value = 0;
+        if (string.IsNullOrWhiteSpace(text))
+            return false;
+        return double.TryParse(text.Trim().Replace(',', '.'),
+            NumberStyles.Float, CultureInfo.InvariantCulture, out value);
+    }
 }

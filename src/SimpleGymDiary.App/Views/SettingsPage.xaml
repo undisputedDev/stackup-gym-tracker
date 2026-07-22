@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:SimpleGymDiary.App.ViewModels"
+             x:Class="SimpleGymDiary.App.Views.SettingsPage"
+             x:DataType="vm:SettingsViewModel"
+             Title="Settings">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="12">
+
+            <Label Text="Units" Style="{StaticResource SectionTitle}" />
+            <Border Style="{StaticResource Card}">
+                <Picker SelectedIndex="{Binding UnitIndex}" FontSize="16">
+                    <Picker.ItemsSource>
+                        <x:Array Type="{x:Type x:String}">
+                            <x:String>Kilograms (kg)</x:String>
+                            <x:String>Pounds (lbs)</x:String>
+                        </x:Array>
+                    </Picker.ItemsSource>
+                </Picker>
+            </Border>
+
+            <Label Text="Progression defaults" Style="{StaticResource SectionTitle}" />
+            <Border Style="{StaticResource Card}">
+                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="12" RowSpacing="4">
+                    <Label Text="Rep range min" Style="{StaticResource Hint}" />
+                    <Entry Grid.Row="1" Text="{Binding RepMinText}" Keyboard="Numeric" />
+                    <Label Grid.Column="1" Text="Rep range max" Style="{StaticResource Hint}" />
+                    <Entry Grid.Row="1" Grid.Column="1" Text="{Binding RepMaxText}" Keyboard="Numeric" />
+
+                    <Label Grid.Row="2" Text="Weight increment (kg)" Style="{StaticResource Hint}" Margin="0,8,0,0" />
+                    <Entry Grid.Row="3" Text="{Binding IncrementText}" Keyboard="Numeric" />
+                    <Label Grid.Row="2" Grid.Column="1" Text="Rep increment" Style="{StaticResource Hint}" Margin="0,8,0,0" />
+                    <Entry Grid.Row="3" Grid.Column="1" Text="{Binding RepIncrementText}" Keyboard="Numeric" />
+
+                    <Label Grid.Row="4" Text="Sets per exercise" Style="{StaticResource Hint}" Margin="0,8,0,0" />
+                    <Entry Grid.Row="5" Text="{Binding SetCountText}" Keyboard="Numeric" />
+                </Grid>
+            </Border>
+
+            <Label Text="Which set decides the arrow?" Style="{StaticResource SectionTitle}" />
+            <Border Style="{StaticResource Card}">
+                <Picker SelectedIndex="{Binding CountingSetRuleIndex}" FontSize="16">
+                    <Picker.ItemsSource>
+                        <x:Array Type="{x:Type x:String}">
+                            <x:String>First set</x:String>
+                            <x:String>Last set</x:String>
+                            <x:String>Best set</x:String>
+                        </x:Array>
+                    </Picker.ItemsSource>
+                </Picker>
+            </Border>
+
+            <Label Text="Data" Style="{StaticResource SectionTitle}" />
+            <Button Text="Export history as CSV"
+                    FontFamily="OpenSansSemibold"
+                    HeightRequest="52" CornerRadius="12"
+                    Command="{Binding ExportCsvCommand}" />
+            <Label Text="One row per set — opens directly in Excel."
+                   Style="{StaticResource Hint}" HorizontalOptions="Center" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
