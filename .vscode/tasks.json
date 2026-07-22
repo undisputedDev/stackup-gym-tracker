@@ -1,0 +1,38 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Run app (Windows)",
+            "type": "shell",
+            "command": "dotnet",
+            "args": [
+                "build",
+                "src/SimpleGymDiary.App",
+                "-f", "net10.0-windows10.0.19041.0",
+                "-t:Run"
+            ],
+            "group": { "kind": "build", "isDefault": true },
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "Run app (Android)",
+            "type": "shell",
+            "command": "dotnet",
+            "args": [
+                "build",
+                "src/SimpleGymDiary.App",
+                "-f", "net10.0-android",
+                "-t:Run"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "Run tests",
+            "type": "shell",
+            "command": "dotnet",
+            "args": ["test", "tests/SimpleGymDiary.Tests"],
+            "group": "test",
+            "problemMatcher": "$msCompile"
+        }
+    ]
+}
