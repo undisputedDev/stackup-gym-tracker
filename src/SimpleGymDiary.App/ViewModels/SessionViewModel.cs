@@ -14,10 +14,14 @@ public partial class SessionViewModel : ObservableObject
 {
     private readonly AppDatabase _db;
 
+    private int? _prevSessionId;
+    private int? _nextSessionId;
+
     public SessionViewModel(AppDatabase db)
     {
         _db = db;
         Title = "";
+        HeaderText = "";
     }
 
     [ObservableProperty]
@@ -25,6 +29,20 @@ public partial class SessionViewModel : ObservableObject
 
     [ObservableProperty]
     public partial string Title { get; set; }
+
+    /// <summary>"In progress" or the completion date of the session being viewed.</summary>
+    [ObservableProperty]
+    public partial string HeaderText { get; set; }
+
+    /// <summary>True when browsing a completed (historical) session — everything is read-only.</summary>
+    [ObservableProperty]
+    public partial bool IsReadOnly { get; set; }
+
+    [ObservableProperty]
+    public partial bool CanGoPrev { get; set; }
+
+    [ObservableProperty]
+    public partial bool CanGoNext { get; set; }
 
     public ObservableCollection<SessionEntryViewModel> Entries { get; } = [];
 
@@ -39,6 +57,19 @@ public partial class SessionViewModel : ObservableObject
         var split = await _db.GetSplitAsync(session.SplitId);
         Title = split?.Name ?? "Workout";
 
+        IsReadOnly = session.CompletedAtUtc is not null;
+        HeaderText = session.CompletedAtUtc is { } done
+            ? $"{done.ToLocalTime():ddd, dd.MM.yyyy} · read-only"
+            : "In progress";
+
+        // Neighbours within this split's timeline (oldest -> newest, in-progress last).
+        var timeline = await _db.GetSessionsForSplitAsync(session.SplitId);
+        var index = timeline.FindIndex(s => s.Id == session.Id);
+        _prevSessionId = index > 0 ? timeline[index - 1].Id : null;
+        _nextSessionId = index >= 0 && index < timeline.Count - 1 ? timeline[index + 1].Id : null;
+        CanGoPrev = _prevSessionId is not null;
+        CanGoNext = _nextSessionId is not null;
+
         var settings = await _db.GetSettingsAsync();
         var entries = await _db.GetSessionEntriesAsync(SessionId);
 
@@ -48,13 +79,35 @@ public partial class SessionViewModel : ObservableObject
             var exercise = await _db.GetExerciseAsync(entry.ExerciseId);
             if (exercise is null)
                 continue;
-            Entries.Add(new SessionEntryViewModel(_db, entry, exercise, settings));
+            Entries.Add(new SessionEntryViewModel(_db, entry, exercise, settings, isEditable: !IsReadOnly));
+        }
+    }
+
+    [RelayCommand]
+    private async Task GoPrevAsync()
+    {
+        if (_prevSessionId is { } id)
+        {
+            SessionId = id;
+            await LoadAsync();
+        }
+    }
+
+    [RelayCommand]
+    private async Task GoNextAsync()
+    {
+        if (_nextSessionId is { } id)
+        {
+            SessionId = id;
+            await LoadAsync();
         }
     }
 
     [RelayCommand]
     private async Task FinishAsync()
     {
+        if (IsReadOnly)
+            return;
         await _db.CompleteSessionAsync(SessionId, DateTime.UtcNow);
         await Shell.Current.GoToAsync("..");
     }
@@ -71,11 +124,15 @@ public partial class SessionEntryViewModel : ObservableObject
     public SessionEntry Entry { get; }
     public Exercise Exercise { get; }
 
-    public SessionEntryViewModel(AppDatabase db, SessionEntry entry, Exercise exercise, AppSettings settings)
+    /// <summary>False when the entry belongs to a completed session being browsed read-only.</summary>
+    public bool IsEditable { get; }
+
+    public SessionEntryViewModel(AppDatabase db, SessionEntry entry, Exercise exercise, AppSettings settings, bool isEditable = true)
     {
         _db = db;
         Entry = entry;
         Exercise = exercise;
+        IsEditable = isEditable;
         _unit = settings.Unit;
         _eff = EffectiveExerciseSettings.Resolve(exercise, settings);
 
@@ -89,7 +146,9 @@ public partial class SessionEntryViewModel : ObservableObject
         RefreshMarkVisuals();
     }
 
-    public string Name => Exercise.Name;
+    /// <summary>Snapshot name from session time; falls back to the current name for pre-snapshot rows.</summary>
+    public string Name => string.IsNullOrEmpty(Entry.ExerciseNameSnapshot) ? Exercise.Name : Entry.ExerciseNameSnapshot;
+
     public bool IsWeightBased => Exercise.TrackingType == TrackingType.WeightBased;
     public string UnitLabel => UnitConverter.UnitLabel(_unit);
 
@@ -97,7 +156,10 @@ public partial class SessionEntryViewModel : ObservableObject
     {
         get
         {
-            var range = $"Target {_eff.RepMin}–{_eff.RepMax} reps";
+            // Historical entries show the range that applied back then, not today's settings.
+            var min = Entry.RepMinSnapshot ?? _eff.RepMin;
+            var max = Entry.RepMaxSnapshot ?? _eff.RepMax;
+            var range = $"Target {min}–{max} reps";
             if (IsWeightBased && Entry.SuggestedWeightKg is { } sw)
                 return $"{range} · suggested {UnitConverter.Format(sw, _unit)} {UnitLabel}";
             if (!IsWeightBased && Entry.SuggestedReps is { } sr)
@@ -131,6 +193,8 @@ public partial class SessionEntryViewModel : ObservableObject
 
     private void StepWeight(int direction)
     {
+        if (!IsEditable)
+            return;
         var current = Entry.WeightKg ?? Entry.SuggestedWeightKg ?? 0;
         var next = Math.Max(0, current + direction * _eff.WeightIncrementKg);
         Entry.WeightKg = next;
@@ -145,6 +209,8 @@ public partial class SessionEntryViewModel : ObservableObject
     [RelayCommand]
     private void AddSet()
     {
+        if (!IsEditable)
+            return;
         Sets.Add(new SetViewModel(this, 0));
         OnRepsChanged();
     }
@@ -152,7 +218,7 @@ public partial class SessionEntryViewModel : ObservableObject
     [RelayCommand]
     private void RemoveSet()
     {
-        if (Sets.Count <= 1)
+        if (!IsEditable || Sets.Count <= 1)
             return;
         Sets.RemoveAt(Sets.Count - 1);
         OnRepsChanged();
@@ -183,6 +249,8 @@ public partial class SessionEntryViewModel : ObservableObject
     [RelayCommand]
     private void CycleMark()
     {
+        if (!IsEditable)
+            return;
         // Down -> Keep -> Up -> Down…; an explicit tap always counts as a manual override.
         Entry.Mark = Entry.Mark switch
         {
@@ -198,6 +266,8 @@ public partial class SessionEntryViewModel : ObservableObject
     [RelayCommand]
     private void ResetMark()
     {
+        if (!IsEditable)
+            return;
         Entry.MarkIsManual = false;
         ProgressionEngine.ApplyAutoMark(Entry, _eff);
         RefreshMarkVisuals();

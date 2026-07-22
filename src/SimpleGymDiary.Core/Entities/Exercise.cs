@@ -27,6 +27,9 @@ public class Exercise
 
     public CountingSetRule? CountingSetRuleOverride { get; set; }
 
+    /// <summary>Whether this exercise's chart is shown on the stats tab (all on by default).</summary>
+    public bool IsVisibleInStats { get; set; } = true;
+
     /// <summary>Soft delete — history keeps referencing archived exercises.</summary>
     public bool IsArchived { get; set; }
 }

@@ -121,6 +121,71 @@ public sealed class AppDatabaseTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task StartSession_SnapshotsNameAndRepRange()
+    {
+        var db = await CreateAsync();
+        var splits = await db.GetSplitsAsync();
+        var lat = (await db.GetSplitExercisesAsync(splits[0].Id))[0];
+        lat.RepRangeMinOverride = 6;
+        lat.RepRangeMaxOverride = 8;
+        await db.SaveExerciseAsync(lat);
+
+        var session = await db.StartSessionAsync(splits[0].Id, DateTime.UtcNow);
+        var entry = (await db.GetSessionEntriesAsync(session.Id))[0];
+
+        Assert.Equal("Lat Pulldown", entry.ExerciseNameSnapshot);
+        Assert.Equal(6, entry.RepMinSnapshot);
+        Assert.Equal(8, entry.RepMaxSnapshot);
+    }
+
+    [Fact]
+    public async Task RenamingExercise_DoesNotRewriteHistorySnapshots()
+    {
+        var db = await CreateAsync();
+        var splits = await db.GetSplitsAsync();
+        var session = await db.StartSessionAsync(splits[0].Id, DateTime.UtcNow);
+        await db.CompleteSessionAsync(session.Id, DateTime.UtcNow);
+
+        var lat = (await db.GetSplitExercisesAsync(splits[0].Id))[0];
+        lat.Name = "Wide-Grip Pulldown";
+        await db.SaveExerciseAsync(lat);
+
+        var entry = (await db.GetSessionEntriesAsync(session.Id))[0];
+        Assert.Equal("Lat Pulldown", entry.ExerciseNameSnapshot);
+    }
+
+    [Fact]
+    public async Task SessionsForSplit_OrderedOldestFirst_IncludingInProgress()
+    {
+        var db = await CreateAsync();
+        var splits = await db.GetSplitsAsync();
+
+        var s1 = await db.StartSessionAsync(splits[0].Id, new DateTime(2026, 7, 1, 17, 0, 0, DateTimeKind.Utc));
+        await db.CompleteSessionAsync(s1.Id, new DateTime(2026, 7, 1, 18, 0, 0, DateTimeKind.Utc));
+        var s2 = await db.StartSessionAsync(splits[0].Id, new DateTime(2026, 7, 8, 17, 0, 0, DateTimeKind.Utc));
+        await db.CompleteSessionAsync(s2.Id, new DateTime(2026, 7, 8, 18, 0, 0, DateTimeKind.Utc));
+        var s3 = await db.StartSessionAsync(splits[0].Id, new DateTime(2026, 7, 15, 17, 0, 0, DateTimeKind.Utc)); // in progress
+        await db.StartSessionAsync(splits[1].Id, DateTime.UtcNow); // other split — excluded
+
+        var timeline = await db.GetSessionsForSplitAsync(splits[0].Id);
+        Assert.Equal([s1.Id, s2.Id, s3.Id], timeline.Select(s => s.Id).ToArray());
+    }
+
+    [Fact]
+    public async Task IsVisibleInStats_DefaultsTrue_AndPersists()
+    {
+        var db = await CreateAsync();
+        var exercises = await db.GetExercisesAsync();
+        Assert.All(exercises, e => Assert.True(e.IsVisibleInStats));
+
+        exercises[0].IsVisibleInStats = false;
+        await db.SaveExerciseAsync(exercises[0]);
+
+        var reloaded = await db.GetExerciseAsync(exercises[0].Id);
+        Assert.False(reloaded!.IsVisibleInStats);
+    }
+
+    [Fact]
     public async Task ExportRows_OnlyCompletedSessions()
     {
         var db = await CreateAsync();

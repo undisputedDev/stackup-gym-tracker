@@ -35,7 +35,32 @@ public class AppDatabase
             await db.CreateTableAsync<SessionEntry>();
             await SeedData.ApplyAsync(db);
         },
+
+        // v2: stats visibility flag + per-entry history snapshots (name, rep range)
+        async db =>
+        {
+            await AddColumnIfMissingAsync(db, "Exercise", "IsVisibleInStats", "INTEGER NOT NULL DEFAULT 1");
+            await AddColumnIfMissingAsync(db, "SessionEntry", "ExerciseNameSnapshot", "TEXT NOT NULL DEFAULT ''");
+            await AddColumnIfMissingAsync(db, "SessionEntry", "RepMinSnapshot", "INTEGER");
+            await AddColumnIfMissingAsync(db, "SessionEntry", "RepMaxSnapshot", "INTEGER");
+            // Backfill names for pre-existing rows; rep-range snapshots stay null (unknown historically).
+            await db.ExecuteAsync(
+                """
+                UPDATE SessionEntry SET ExerciseNameSnapshot =
+                    COALESCE((SELECT e.Name FROM Exercise e WHERE e.Id = SessionEntry.ExerciseId), '')
+                WHERE ExerciseNameSnapshot = ''
+                """);
+        },
     ];
+
+    private static async Task AddColumnIfMissingAsync(SQLiteAsyncConnection db, string table, string column, string definition)
+    {
+        // Fresh installs create the full schema in v1 (CreateTableAsync uses the current
+        // entity classes), so later migrations must tolerate already-present columns.
+        var existing = await db.QueryScalarsAsync<string>($"SELECT name FROM pragma_table_info('{table}')");
+        if (!existing.Contains(column, StringComparer.OrdinalIgnoreCase))
+            await db.ExecuteAsync($"ALTER TABLE {table} ADD COLUMN {column} {definition}");
+    }
 
     public async Task InitializeAsync()
     {
@@ -162,6 +187,11 @@ public class AppDatabase
             .OrderByDescending(s => s.StartedAtUtc).ToListAsync())
         .FirstOrDefault();
 
+    /// <summary>All sessions of a split (completed + in-progress), oldest first — for history browsing.</summary>
+    public Task<List<Session>> GetSessionsForSplitAsync(int splitId) =>
+        _db.Table<Session>().Where(s => s.SplitId == splitId)
+            .OrderBy(s => s.StartedAtUtc).ToListAsync();
+
     public async Task<Session?> GetLastCompletedSessionForSplitAsync(int splitId) =>
         (await _db.Table<Session>().Where(s => s.SplitId == splitId && s.CompletedAtUtc != null)
             .OrderByDescending(s => s.StartedAtUtc).ToListAsync())
@@ -207,6 +237,9 @@ public class AppDatabase
                 WeightKg = suggestion.WeightKg,
                 SuggestedReps = suggestion.TargetReps,
                 RepsPerSet = RepsSerializer.Serialize(Enumerable.Repeat(0, suggestion.SetCount)),
+                ExerciseNameSnapshot = exercise.Name,
+                RepMinSnapshot = eff.RepMin,
+                RepMaxSnapshot = eff.RepMax,
             });
         }
 

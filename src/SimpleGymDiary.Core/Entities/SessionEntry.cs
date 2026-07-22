@@ -42,4 +42,12 @@ public class SessionEntry
 
     /// <summary>True once the user manually overrode the marking; the override then survives recomputation.</summary>
     public bool MarkIsManual { get; set; }
+
+    /// <summary>Exercise name at session time — later renames don't rewrite history.</summary>
+    public string ExerciseNameSnapshot { get; set; } = "";
+
+    /// <summary>Effective rep range at session time (null on rows from before the snapshot columns existed).</summary>
+    public int? RepMinSnapshot { get; set; }
+
+    public int? RepMaxSnapshot { get; set; }
 }
