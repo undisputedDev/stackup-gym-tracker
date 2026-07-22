@@ -3,6 +3,8 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SimpleGymDiary.Core.Data;
 using SimpleGymDiary.Core.Entities;
+using SimpleGymDiary.Core.Enums;
+using SimpleGymDiary.Core.Progression;
 
 namespace SimpleGymDiary.App.ViewModels;
 
@@ -14,7 +16,12 @@ public partial class WorkoutHomeViewModel : ObservableObject
     {
         _db = db;
         InProgressText = "";
+        MomentumText = "";
     }
+
+    /// <summary>"Week 14 · 26 sessions" — quiet sense of an ongoing streak.</summary>
+    [ObservableProperty]
+    public partial string MomentumText { get; set; }
 
     public ObservableCollection<SplitCardViewModel> Splits { get; } = [];
 
@@ -39,12 +46,33 @@ public partial class WorkoutHomeViewModel : ObservableObject
             InProgressText = $"Resume {split?.Name ?? "session"} — started {started:HH:mm}";
         }
 
+        var (count, firstUtc) = await _db.GetCompletedSessionStatsAsync();
+        MomentumText = count > 0 && firstUtc is { } first
+            ? $"Week {(DateTime.UtcNow.Date - first.Date).Days / 7 + 1} · {count} sessions"
+            : "";
+
         Splits.Clear();
         foreach (var split in await _db.GetSplitsAsync())
         {
             var last = await _db.GetLastCompletedSessionForSplitAsync(split.Id);
-            Splits.Add(new SplitCardViewModel(split, LastDoneText(last)));
+            var (up, keep, down) = await CountMarksAsync(last);
+            Splits.Add(new SplitCardViewModel(split, LastDoneText(last), up, keep, down, HasMarks: up + keep + down > 0));
         }
+    }
+
+    /// <summary>Mark counts of the split's last completed session (logged entries only).</summary>
+    private async Task<(int Up, int Keep, int Down)> CountMarksAsync(Session? last)
+    {
+        if (last is null)
+            return (0, 0, 0);
+
+        var logged = (await _db.GetSessionEntriesAsync(last.Id))
+            .Where(e => RepsSerializer.Parse(e.RepsPerSet).Any(r => r > 0))
+            .ToList();
+        return (
+            logged.Count(e => e.Mark == Mark.Up),
+            logged.Count(e => e.Mark == Mark.Keep),
+            logged.Count(e => e.Mark == Mark.Down));
     }
 
     private static string LastDoneText(Session? last)
@@ -79,4 +107,15 @@ public partial class WorkoutHomeViewModel : ObservableObject
     }
 }
 
-public record SplitCardViewModel(Split Split, string LastDoneText);
+public record SplitCardViewModel(
+    Split Split,
+    string LastDoneText,
+    int UpCount,
+    int KeepCount,
+    int DownCount,
+    bool HasMarks)
+{
+    public string UpText => $"▲ {UpCount}";
+    public string KeepText => $"▬ {KeepCount}";
+    public string DownText => $"▼ {DownCount}";
+}

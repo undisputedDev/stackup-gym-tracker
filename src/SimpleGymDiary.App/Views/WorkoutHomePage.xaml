@@ -26,6 +26,11 @@
                 </Grid>
             </Border>
 
+            <Label Text="{Binding MomentumText}"
+                   Style="{StaticResource Hint}"
+                   HorizontalOptions="Center"
+                   Margin="0,4,0,0" />
+
             <Label Text="Start a session" Style="{StaticResource SectionTitle}" />
 
             <!-- One card per split -->
@@ -35,8 +40,14 @@
                         <Border Style="{StaticResource Card}">
                             <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
                                 <VerticalStackLayout Spacing="4" VerticalOptions="Center">
-                                    <Label Text="{Binding Split.Name}" FontFamily="OpenSansSemibold" FontSize="18" />
+                                    <Label Text="{Binding Split.Name}" FontFamily="OpenSansSemibold" FontSize="20" />
                                     <Label Text="{Binding LastDoneText}" Style="{StaticResource Hint}" />
+                                    <!-- last session's markings at a glance -->
+                                    <HorizontalStackLayout Spacing="10" IsVisible="{Binding HasMarks}">
+                                        <Label Text="{Binding UpText}" FontSize="13" TextColor="{StaticResource MarkUp}" />
+                                        <Label Text="{Binding KeepText}" FontSize="13" TextColor="{StaticResource MarkKeep}" />
+                                        <Label Text="{Binding DownText}" FontSize="13" TextColor="{StaticResource MarkDown}" />
+                                    </HorizontalStackLayout>
                                 </VerticalStackLayout>
                                 <Button Grid.Column="1"
                                         Text="Start"

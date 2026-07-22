@@ -24,4 +24,14 @@ public partial class SessionPage : ContentPage
         DeviceDisplay.Current.KeepScreenOn = false;
         base.OnDisappearing();
     }
+
+    private async void OnBadgeTapped(object? sender, TappedEventArgs e)
+    {
+        // Quick press bounce on the arrow badge; state change happens via the command.
+        if (sender is View badge)
+        {
+            await badge.ScaleToAsync(0.82, 60, Easing.CubicOut);
+            await badge.ScaleToAsync(1.0, 110, Easing.CubicOut);
+        }
+    }
 }

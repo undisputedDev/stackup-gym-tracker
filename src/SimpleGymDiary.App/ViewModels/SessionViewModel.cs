@@ -22,6 +22,21 @@ public partial class SessionViewModel : ObservableObject
         _db = db;
         Title = "";
         HeaderText = "";
+        SummaryStatsUp = SummaryStatsKeep = SummaryStatsDown = "";
+        SummaryDuration = "";
+    }
+
+    /// <summary>Best-effort haptic tick; unsupported platforms (desktop) just no-op.</summary>
+    internal static void Haptic()
+    {
+        try
+        {
+            HapticFeedback.Default.Perform(HapticFeedbackType.Click);
+        }
+        catch
+        {
+            // not available on this platform
+        }
     }
 
     [ObservableProperty]
@@ -103,15 +118,63 @@ public partial class SessionViewModel : ObservableObject
         }
     }
 
+    // ---- Finish summary ----
+
+    [ObservableProperty]
+    public partial bool IsSummaryVisible { get; set; }
+
+    [ObservableProperty]
+    public partial string SummaryStatsUp { get; set; }
+
+    [ObservableProperty]
+    public partial string SummaryStatsKeep { get; set; }
+
+    [ObservableProperty]
+    public partial string SummaryStatsDown { get; set; }
+
+    [ObservableProperty]
+    public partial string SummaryDuration { get; set; }
+
+    public ObservableCollection<SummaryLine> SummaryLines { get; } = [];
+
     [RelayCommand]
     private async Task FinishAsync()
     {
-        if (IsReadOnly)
+        if (IsReadOnly || IsSummaryVisible)
             return;
-        await _db.CompleteSessionAsync(SessionId, DateTime.UtcNow);
+
+        Haptic();
+        var session = await _db.GetSessionAsync(SessionId);
+        var now = DateTime.UtcNow;
+        await _db.CompleteSessionAsync(SessionId, now);
+
+        var logged = Entries.Where(e => e.HasLoggedData).ToList();
+        SummaryStatsUp = $"▲ {logged.Count(e => e.Entry.Mark == Mark.Up)}";
+        SummaryStatsKeep = $"▬ {logged.Count(e => e.Entry.Mark == Mark.Keep)}";
+        SummaryStatsDown = $"▼ {logged.Count(e => e.Entry.Mark == Mark.Down)}";
+        SummaryDuration = session is not null
+            ? $"{(int)(now - session.StartedAtUtc).TotalMinutes} min"
+            : "";
+
+        SummaryLines.Clear();
+        foreach (var line in Entries.Select(e => e.BuildSummaryLine()).Where(l => l is not null))
+            SummaryLines.Add(line!);
+        if (SummaryLines.Count == 0 && logged.Count > 0)
+            SummaryLines.Add(new SummaryLine("▬", Color.FromArgb("#8A8F98"), "All weights stay — solid session."));
+
+        IsSummaryVisible = true;
+    }
+
+    [RelayCommand]
+    private async Task CloseSummaryAsync()
+    {
+        IsSummaryVisible = false;
         await Shell.Current.GoToAsync("..");
     }
 }
+
+/// <summary>One line in the finish summary: "Lat Pulldown  60 → 62,5 kg".</summary>
+public record SummaryLine(string Glyph, Color GlyphColor, string Text);
 
 /// <summary>One exercise card on the session screen. Every change is persisted immediately (no Save button).</summary>
 public partial class SessionEntryViewModel : ObservableObject
@@ -139,6 +202,7 @@ public partial class SessionEntryViewModel : ObservableObject
         WeightText = entry.WeightKg is { } w ? UnitConverter.Format(w, _unit) : "";
         MarkGlyph = "=";
         MarkColor = Colors.Gray;
+        StripeColor = Colors.Transparent;
         foreach (var reps in RepsSerializer.Parse(entry.RepsPerSet))
             Sets.Add(new SetViewModel(this, reps));
 
@@ -151,6 +215,27 @@ public partial class SessionEntryViewModel : ObservableObject
 
     public bool IsWeightBased => Exercise.TrackingType == TrackingType.WeightBased;
     public string UnitLabel => UnitConverter.UnitLabel(_unit);
+
+    /// <summary>True once any set has reps (or a manual mark was made) — drives stripe + summary.</summary>
+    public bool HasLoggedData => Sets.Any(s => s.Reps > 0) || Entry.MarkIsManual;
+
+    /// <summary>Summary line for the finish overlay; null when nothing changes next session.</summary>
+    public SummaryLine? BuildSummaryLine()
+    {
+        if (!HasLoggedData || Entry.Mark == Mark.Keep)
+            return null;
+
+        var next = ProgressionEngine.SuggestNext(Exercise, _eff, Entry, Sets.Count);
+        string text;
+        if (IsWeightBased && next.WeightKg is { } w && Entry.WeightKg is { } current)
+            text = $"{Name}   {UnitConverter.Format(current, _unit)} → {UnitConverter.Format(w, _unit)} {UnitLabel}";
+        else if (!IsWeightBased && next.TargetReps is { } reps)
+            text = $"{Name}   aim for {reps} reps";
+        else
+            return null;
+
+        return new SummaryLine(MarkGlyph, MarkColor, text);
+    }
 
     public string TargetHint
     {
@@ -195,6 +280,7 @@ public partial class SessionEntryViewModel : ObservableObject
     {
         if (!IsEditable)
             return;
+        SessionViewModel.Haptic();
         var current = Entry.WeightKg ?? Entry.SuggestedWeightKg ?? 0;
         var next = Math.Max(0, current + direction * _eff.WeightIncrementKg);
         Entry.WeightKg = next;
@@ -211,6 +297,7 @@ public partial class SessionEntryViewModel : ObservableObject
     {
         if (!IsEditable)
             return;
+        SessionViewModel.Haptic();
         Sets.Add(new SetViewModel(this, 0));
         OnRepsChanged();
     }
@@ -220,6 +307,7 @@ public partial class SessionEntryViewModel : ObservableObject
     {
         if (!IsEditable || Sets.Count <= 1)
             return;
+        SessionViewModel.Haptic();
         Sets.RemoveAt(Sets.Count - 1);
         OnRepsChanged();
     }
@@ -246,11 +334,16 @@ public partial class SessionEntryViewModel : ObservableObject
     [ObservableProperty]
     public partial bool IsManualMark { get; set; }
 
+    /// <summary>Left edge accent: transparent until data is logged, then the mark color.</summary>
+    [ObservableProperty]
+    public partial Color StripeColor { get; set; }
+
     [RelayCommand]
     private void CycleMark()
     {
         if (!IsEditable)
             return;
+        SessionViewModel.Haptic();
         // Down -> Keep -> Up -> Down…; an explicit tap always counts as a manual override.
         Entry.Mark = Entry.Mark switch
         {
@@ -289,6 +382,7 @@ public partial class SessionEntryViewModel : ObservableObject
             _ => Color.FromArgb("#8A8F98"),
         };
         IsManualMark = Entry.MarkIsManual;
+        StripeColor = HasLoggedData ? MarkColor : Colors.Transparent;
     }
 
     private void Persist() => _ = _db.SaveEntryAsync(Entry);

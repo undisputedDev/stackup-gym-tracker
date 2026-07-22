@@ -8,15 +8,27 @@
 
     <TabBar>
         <Tab Title="Workout">
+            <Tab.Icon>
+                <FontImageSource FontFamily="MaterialIcons" Glyph="&#xEB43;" />
+            </Tab.Icon>
             <ShellContent ContentTemplate="{DataTemplate views:WorkoutHomePage}" Route="workout" />
         </Tab>
         <Tab Title="Splits">
+            <Tab.Icon>
+                <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE241;" />
+            </Tab.Icon>
             <ShellContent ContentTemplate="{DataTemplate views:SplitsPage}" Route="splits" />
         </Tab>
         <Tab Title="Stats">
+            <Tab.Icon>
+                <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE6E1;" />
+            </Tab.Icon>
             <ShellContent ContentTemplate="{DataTemplate views:StatsPage}" Route="stats" />
         </Tab>
         <Tab Title="Settings">
+            <Tab.Icon>
+                <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE8B8;" />
+            </Tab.Icon>
             <ShellContent ContentTemplate="{DataTemplate views:SettingsPage}" Route="settings" />
         </Tab>
     </TabBar>

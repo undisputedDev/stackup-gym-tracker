@@ -187,6 +187,15 @@ public class AppDatabase
             .OrderByDescending(s => s.StartedAtUtc).ToListAsync())
         .FirstOrDefault();
 
+    /// <summary>Total completed sessions and the date of the first one — for the home screen momentum line.</summary>
+    public async Task<(int Count, DateTime? FirstStartedUtc)> GetCompletedSessionStatsAsync()
+    {
+        var count = await _db.Table<Session>().Where(s => s.CompletedAtUtc != null).CountAsync();
+        var first = (await _db.Table<Session>().Where(s => s.CompletedAtUtc != null)
+            .OrderBy(s => s.StartedAtUtc).Take(1).ToListAsync()).FirstOrDefault();
+        return (count, first?.StartedAtUtc);
+    }
+
     /// <summary>All sessions of a split (completed + in-progress), oldest first — for history browsing.</summary>
     public Task<List<Session>> GetSessionsForSplitAsync(int splitId) =>
         _db.Table<Session>().Where(s => s.SplitId == splitId)
