@@ -1,0 +1,158 @@
+using SimpleGymDiary.Core.Data;
+using SimpleGymDiary.Core.Enums;
+using SimpleGymDiary.Core.Progression;
+
+namespace SimpleGymDiary.Tests;
+
+/// <summary>End-to-end tests against a real (temp-file) SQLite database, including the full two-session progression loop.</summary>
+public sealed class AppDatabaseTests : IAsyncLifetime
+{
+    private readonly string _path = Path.Combine(Path.GetTempPath(), $"gymdiary-test-{Guid.NewGuid():N}.db3");
+    private readonly List<AppDatabase> _open = [];
+
+    private async Task<AppDatabase> CreateAsync()
+    {
+        var db = new AppDatabase(_path);
+        _open.Add(db);
+        await db.InitializeAsync();
+        return db;
+    }
+
+    public Task InitializeAsync() => Task.CompletedTask;
+
+    public async Task DisposeAsync()
+    {
+        foreach (var db in _open)
+            await db.CloseAsync();
+        if (File.Exists(_path))
+            File.Delete(_path);
+    }
+
+    [Fact]
+    public async Task Initialize_SeedsSplitsExercisesAndSettings()
+    {
+        var db = await CreateAsync();
+
+        var settings = await db.GetSettingsAsync();
+        Assert.Equal(10, settings.DefaultRepRangeMin);
+        Assert.Equal(2.5, settings.DefaultWeightIncrementKg);
+
+        var splits = await db.GetSplitsAsync();
+        Assert.Equal(["Upper Body", "Lower Body"], splits.Select(s => s.Name).ToArray());
+
+        var upper = await db.GetSplitExercisesAsync(splits[0].Id);
+        Assert.Equal(["Lat Pulldown", "Rowing", "Bench Press", "Butterfly", "Lateral Raise"],
+            upper.Select(e => e.Name).ToArray());
+
+        var lower = await db.GetSplitExercisesAsync(splits[1].Id);
+        Assert.Equal(5, lower.Count);
+    }
+
+    [Fact]
+    public async Task Initialize_IsIdempotent_NoDoubleSeed()
+    {
+        var db = await CreateAsync();
+        // Second connection to the same file: migrations must not re-run.
+        var db2 = await CreateAsync();
+
+        Assert.Equal(2, (await db2.GetSplitsAsync()).Count);
+    }
+
+    [Fact]
+    public async Task FullLoop_SecondSessionGetsAdjustedSuggestion()
+    {
+        var db = await CreateAsync();
+        var splits = await db.GetSplitsAsync();
+        var upperId = splits[0].Id;
+        var settings = await db.GetSettingsAsync();
+
+        // --- Session 1: user types 60 kg and manages 16 reps (above range -> Up) ---
+        var s1 = await db.StartSessionAsync(upperId, new DateTime(2026, 7, 15, 17, 0, 0, DateTimeKind.Utc));
+        var entries = await db.GetSessionEntriesAsync(s1.Id);
+        Assert.Equal(5, entries.Count);
+        Assert.Null(entries[0].SuggestedWeightKg); // first-ever session: no suggestion
+
+        var lat = entries[0];
+        lat.WeightKg = 60;
+        lat.RepsPerSet = "16,14,12";
+        var exercise = (await db.GetExerciseAsync(lat.ExerciseId))!;
+        ProgressionEngine.ApplyAutoMark(lat, EffectiveExerciseSettings.Resolve(exercise, settings));
+        await db.SaveEntryAsync(lat);
+        Assert.Equal(Mark.Up, lat.Mark);
+
+        await db.CompleteSessionAsync(s1.Id, new DateTime(2026, 7, 15, 18, 0, 0, DateTimeKind.Utc));
+        Assert.Null(await db.GetInProgressSessionAsync());
+
+        // --- Session 2: suggestion must be 60 + 2.5 ---
+        var s2 = await db.StartSessionAsync(upperId, new DateTime(2026, 7, 18, 17, 0, 0, DateTimeKind.Utc));
+        var entries2 = await db.GetSessionEntriesAsync(s2.Id);
+        Assert.Equal(62.5, entries2[0].SuggestedWeightKg);
+        Assert.Equal(62.5, entries2[0].WeightKg);
+        Assert.Equal("0,0,0", entries2[0].RepsPerSet);
+    }
+
+    [Fact]
+    public async Task InProgressSession_IsResumable()
+    {
+        var db = await CreateAsync();
+        var splits = await db.GetSplitsAsync();
+        var session = await db.StartSessionAsync(splits[0].Id, DateTime.UtcNow);
+
+        var resumed = await db.GetInProgressSessionAsync();
+        Assert.NotNull(resumed);
+        Assert.Equal(session.Id, resumed.Id);
+    }
+
+    [Fact]
+    public async Task ArchivedExercise_DisappearsFromSplit_ButHistoryRemains()
+    {
+        var db = await CreateAsync();
+        var splits = await db.GetSplitsAsync();
+        var upper = await db.GetSplitExercisesAsync(splits[0].Id);
+        var latId = upper[0].Id;
+
+        var session = await db.StartSessionAsync(splits[0].Id, DateTime.UtcNow);
+        await db.CompleteSessionAsync(session.Id, DateTime.UtcNow);
+
+        await db.ArchiveExerciseAsync(latId);
+
+        Assert.Equal(4, (await db.GetSplitExercisesAsync(splits[0].Id)).Count);
+        Assert.Equal(5, (await db.GetSessionEntriesAsync(session.Id)).Count); // history untouched
+    }
+
+    [Fact]
+    public async Task ExportRows_OnlyCompletedSessions()
+    {
+        var db = await CreateAsync();
+        var splits = await db.GetSplitsAsync();
+
+        var s1 = await db.StartSessionAsync(splits[0].Id, DateTime.UtcNow.AddDays(-3));
+        await db.CompleteSessionAsync(s1.Id, DateTime.UtcNow.AddDays(-3));
+        await db.StartSessionAsync(splits[1].Id, DateTime.UtcNow); // in progress -> excluded
+
+        var rows = await db.GetExportRowsAsync();
+        Assert.Equal(5, rows.Count);
+        Assert.All(rows, r => Assert.Equal("Upper Body", r.SplitName));
+    }
+
+    [Fact]
+    public async Task ExerciseHistory_OrderedByDate()
+    {
+        var db = await CreateAsync();
+        var splits = await db.GetSplitsAsync();
+        var latId = (await db.GetSplitExercisesAsync(splits[0].Id))[0].Id;
+
+        foreach (var (day, weight) in new[] { (1, 60.0), (4, 62.5), (8, 65.0) })
+        {
+            var s = await db.StartSessionAsync(splits[0].Id, new DateTime(2026, 7, day, 17, 0, 0, DateTimeKind.Utc));
+            var e = (await db.GetSessionEntriesAsync(s.Id))[0];
+            e.WeightKg = weight;
+            e.RepsPerSet = "12,11,10";
+            await db.SaveEntryAsync(e);
+            await db.CompleteSessionAsync(s.Id, new DateTime(2026, 7, day, 18, 0, 0, DateTimeKind.Utc));
+        }
+
+        var history = await db.GetExerciseHistoryAsync(latId);
+        Assert.Equal([60.0, 62.5, 65.0], history.Select(h => h.WeightKg!.Value).ToArray());
+    }
+}

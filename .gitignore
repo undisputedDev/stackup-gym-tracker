@@ -1,0 +1,16 @@
+# Build output
+bin/
+obj/
+*.user
+
+# IDE
+.vs/
+.idea/
+
+# MAUI / mobile
+*.apk
+*.aab
+*.ipa
+
+# Test results
+TestResults/

@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/SimpleGymDiary.App/SimpleGymDiary.App.csproj" />
+    <Project Path="src/SimpleGymDiary.Core/SimpleGymDiary.Core.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/SimpleGymDiary.Tests/SimpleGymDiary.Tests.csproj" />
+  </Folder>
+</Solution>
