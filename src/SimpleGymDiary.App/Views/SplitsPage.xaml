@@ -6,13 +6,10 @@
              x:DataType="vm:SplitsViewModel"
              Title="Splits">
 
-    <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Add" Command="{Binding AddSplitCommand}" />
-    </ContentPage.ToolbarItems>
-
-    <ScrollView>
-        <VerticalStackLayout Padding="16" Spacing="12"
-                             BindableLayout.ItemsSource="{Binding Splits}">
+    <Grid>
+        <ScrollView>
+            <VerticalStackLayout Padding="16,16,16,96" Spacing="12"
+                                 BindableLayout.ItemsSource="{Binding Splits}">
             <BindableLayout.ItemTemplate>
                 <DataTemplate x:DataType="vm:SplitListItemViewModel">
                     <Border Style="{StaticResource Card}">
@@ -36,6 +33,11 @@
                 <Label Text="No splits yet. Tap Add to create your first training day."
                        Style="{StaticResource Hint}" HorizontalOptions="Center" Margin="0,32" />
             </BindableLayout.EmptyView>
-        </VerticalStackLayout>
-    </ScrollView>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <Button Style="{StaticResource Fab}"
+                SemanticProperties.Description="Add split"
+                Command="{Binding AddSplitCommand}" />
+    </Grid>
 </ContentPage>

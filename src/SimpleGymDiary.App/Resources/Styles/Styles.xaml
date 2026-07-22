@@ -471,6 +471,25 @@
         <Setter Property="HeightRequest" Value="48" />
     </Style>
 
+    <!-- Floating action button: the one primary "add" action of a list screen -->
+    <Style TargetType="Button" x:Key="Fab">
+        <Setter Property="FontFamily" Value="MaterialIcons" />
+        <Setter Property="Text" Value="&#xE145;" />
+        <Setter Property="FontSize" Value="26" />
+        <Setter Property="WidthRequest" Value="60" />
+        <Setter Property="HeightRequest" Value="60" />
+        <Setter Property="CornerRadius" Value="30" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="HorizontalOptions" Value="End" />
+        <Setter Property="VerticalOptions" Value="End" />
+        <Setter Property="Margin" Value="0,0,20,20" />
+        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light=White, Dark={StaticResource PrimaryDarkText}}" />
+        <Setter Property="Shadow">
+            <Shadow Brush="Black" Opacity="0.35" Radius="12" Offset="0,4" />
+        </Setter>
+    </Style>
+
     <!-- Subtle secondary text -->
     <Style TargetType="Label" x:Key="Hint">
         <Setter Property="FontSize" Value="13" />

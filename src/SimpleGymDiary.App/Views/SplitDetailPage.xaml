@@ -12,8 +12,9 @@
         <ToolbarItem Text="Delete" Command="{Binding ArchiveSplitCommand}" Order="Secondary" />
     </ContentPage.ToolbarItems>
 
-    <ScrollView>
-        <VerticalStackLayout Padding="16" Spacing="12">
+    <Grid>
+        <ScrollView>
+            <VerticalStackLayout Padding="16,16,16,96" Spacing="12">
 
             <Label Text="Exercises (in workout order)" Style="{StaticResource SectionTitle}" />
 
@@ -57,14 +58,14 @@
                 </BindableLayout.EmptyView>
             </VerticalStackLayout>
 
-            <Button Text="Add exercise"
-                    FontFamily="OpenSansSemibold"
-                    HeightRequest="52" CornerRadius="12"
-                    Command="{Binding AddExerciseCommand}" />
-
             <Label Text="Tap an exercise name to edit its settings (rep range, increment)."
                    Style="{StaticResource Hint}" HorizontalOptions="Center" />
 
-        </VerticalStackLayout>
-    </ScrollView>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <Button Style="{StaticResource Fab}"
+                SemanticProperties.Description="Add exercise"
+                Command="{Binding AddExerciseCommand}" />
+    </Grid>
 </ContentPage>
