@@ -25,6 +25,7 @@ public partial class SessionViewModel : ObservableObject
         _reviewPrompter = reviewPrompter;
         Title = "";
         HeaderText = "";
+        DeleteActionText = "";
         SummaryStatsUp = SummaryStatsKeep = SummaryStatsDown = "";
         SummaryDuration = "";
     }
@@ -79,6 +80,7 @@ public partial class SessionViewModel : ObservableObject
         HeaderText = session.CompletedAtUtc is { } done
             ? $"{done.ToLocalTime():ddd, dd.MM.yyyy} · read-only"
             : "In progress";
+        DeleteActionText = IsReadOnly ? "Delete session" : "Discard session";
 
         // Neighbours within this split's timeline (oldest -> newest, in-progress last).
         var timeline = await _db.GetSessionsForSplitAsync(session.SplitId);
@@ -123,6 +125,52 @@ public partial class SessionViewModel : ObservableObject
         {
             settings.HasSeenProgressionExplainer = true;
             await _db.SaveSettingsAsync(settings);
+        }
+    }
+
+    /// <summary>"Discard session" while in progress, "Delete session" when browsing history.</summary>
+    [ObservableProperty]
+    public partial string DeleteActionText { get; set; }
+
+    [RelayCommand]
+    private async Task DeleteSessionAsync()
+    {
+        if (IsSummaryVisible)
+            return;
+
+        var confirmed = IsReadOnly
+            ? await Shell.Current.DisplayAlertAsync("Delete session",
+                "Delete this session from your history? Charts and next-time suggestions will no longer include it.",
+                "Delete", "Cancel")
+            : await Shell.Current.DisplayAlertAsync("Discard session",
+                "Discard this session? Logged sets are lost.", "Discard", "Cancel");
+        if (!confirmed)
+            return;
+
+        var prev = _prevSessionId;
+        var next = _nextSessionId;
+        await _db.DeleteSessionAsync(SessionId);
+
+        if (!IsReadOnly)
+        {
+            await Shell.Current.GoToAsync("..");
+            return;
+        }
+
+        // Deleted from history: jump to a neighbour (prefer the older one) or leave.
+        if (prev is { } p)
+        {
+            SessionId = p;
+            await LoadAsync();
+        }
+        else if (next is { } n)
+        {
+            SessionId = n;
+            await LoadAsync();
+        }
+        else
+        {
+            await Shell.Current.GoToAsync("..");
         }
     }
 

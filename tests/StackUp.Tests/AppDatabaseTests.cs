@@ -219,6 +219,36 @@ public sealed class AppDatabaseTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task DeleteSession_RemovesEntries_AndProgressionFallsBack()
+    {
+        var db = await CreateAsync();
+        var splits = await db.GetSplitsAsync();
+        var settings = await db.GetSettingsAsync();
+        var latId = (await db.GetSplitExercisesAsync(splits[0].Id))[0].Id;
+
+        // Two completed sessions with different weights on the same exercise.
+        foreach (var (day, weight) in new[] { (1, 60.0), (8, 62.5) })
+        {
+            var s = await db.StartSessionAsync(splits[0].Id, new DateTime(2026, 7, day, 17, 0, 0, DateTimeKind.Utc));
+            var e = (await db.GetSessionEntriesAsync(s.Id))[0];
+            e.WeightKg = weight;
+            e.RepsPerSet = "12,11,10";
+            await db.SaveEntryAsync(e);
+            await db.CompleteSessionAsync(s.Id, new DateTime(2026, 7, day, 18, 0, 0, DateTimeKind.Utc));
+        }
+
+        var timeline = await db.GetSessionsForSplitAsync(splits[0].Id);
+        var newestId = timeline[^1].Id;
+        await db.DeleteSessionAsync(newestId);
+
+        // Entries are gone with the session; progression falls back to the older one.
+        Assert.Empty(await db.GetSessionEntriesAsync(newestId));
+        Assert.Single(await db.GetSessionsForSplitAsync(splits[0].Id));
+        var last = await db.GetLastCompletedEntryForExerciseAsync(latId);
+        Assert.Equal(60.0, last!.WeightKg);
+    }
+
+    [Fact]
     public async Task ExplainerFlag_DefaultsFalse_AndRoundTrips()
     {
         var db = await CreateAsync();

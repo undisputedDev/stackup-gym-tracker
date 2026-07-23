@@ -54,6 +54,19 @@
                 </Picker>
             </Border>
 
+            <Label Text="Data" Style="{StaticResource SectionTitle}" />
+            <Button Text="Create backup"
+                    FontFamily="OpenSansSemibold"
+                    HeightRequest="52" CornerRadius="12"
+                    Command="{Binding CreateBackupCommand}" />
+            <Button Text="Restore backup"
+                    HeightRequest="52" CornerRadius="12"
+                    BackgroundColor="Transparent"
+                    BorderColor="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}"
+                    BorderWidth="1"
+                    TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                    Command="{Binding RestoreBackupCommand}" />
+
             <Label Text="Help" Style="{StaticResource SectionTitle}" />
             <Button Text="How progression works"
                     FontFamily="OpenSansSemibold"

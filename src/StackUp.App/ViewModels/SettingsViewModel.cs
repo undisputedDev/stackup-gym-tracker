@@ -109,6 +109,75 @@ public partial class SettingsViewModel : ObservableObject
             _ = _db.SaveSettingsAsync(_settings);
     }
 
+    // ---- Backup & restore ----
+
+    [RelayCommand]
+    private async Task CreateBackupAsync()
+    {
+        try
+        {
+            await _db.InitializeAsync();
+            var path = Path.Combine(FileSystem.CacheDirectory, $"stackup-backup-{DateTime.Now:yyyy-MM-dd}.db3");
+            if (File.Exists(path))
+                File.Delete(path);
+            await _db.CreateBackupAsync(path);
+            await Share.Default.RequestAsync(new ShareFileRequest
+            {
+                Title = "StackUp backup",
+                File = new ShareFile(path),
+            });
+        }
+        catch (Exception ex)
+        {
+            await Shell.Current.DisplayAlertAsync("Backup failed", ex.Message, "OK");
+        }
+    }
+
+    [RelayCommand]
+    private async Task RestoreBackupAsync()
+    {
+        try
+        {
+            // No file-type filter: .db3 has no reliable MIME type on Android; validation is the gate.
+            var picked = await FilePicker.Default.PickAsync(new PickOptions { PickerTitle = "Choose a StackUp backup" });
+            if (picked is null)
+                return;
+
+            // Android SAF hands out a stream, not a real path — stage a local copy first.
+            var temp = Path.Combine(FileSystem.CacheDirectory, "restore-candidate.db3");
+            using (var source = await picked.OpenReadAsync())
+            using (var destination = File.Create(temp))
+                await source.CopyToAsync(destination);
+
+            switch (await AppDatabase.ValidateBackupFileAsync(temp))
+            {
+                case BackupFileStatus.Invalid:
+                    await Shell.Current.DisplayAlertAsync("Restore backup",
+                        "The selected file is not a valid StackUp backup.", "OK");
+                    return;
+                case BackupFileStatus.NewerAppVersion:
+                    await Shell.Current.DisplayAlertAsync("Restore backup",
+                        "This backup was created by a newer version of StackUp. Update the app first.", "OK");
+                    return;
+            }
+
+            var confirmed = await Shell.Current.DisplayAlertAsync("Restore backup",
+                "This replaces all current data with the backup. This cannot be undone. Continue?",
+                "Restore", "Cancel");
+            if (!confirmed)
+                return;
+
+            await _db.RestoreFromFileAsync(temp);
+            File.Delete(temp);
+            await LoadAsync();
+            await Shell.Current.DisplayAlertAsync("Restore backup", "Backup restored.", "OK");
+        }
+        catch (Exception ex)
+        {
+            await Shell.Current.DisplayAlertAsync("Restore failed", ex.Message, "OK");
+        }
+    }
+
     // ---- Progression explainer (re-openable; the one-time flag is only set on the session screen) ----
 
     [ObservableProperty]

@@ -15,6 +15,7 @@
 
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="?" Command="{Binding ShowExplainerCommand}" />
+        <ToolbarItem Text="{Binding DeleteActionText}" Order="Secondary" Command="{Binding DeleteSessionCommand}" />
     </ContentPage.ToolbarItems>
 
     <Grid RowDefinitions="Auto,*,Auto">

@@ -10,15 +10,19 @@ namespace StackUp.Core.Data;
 /// </summary>
 public class AppDatabase
 {
-    private readonly SQLiteAsyncConnection _db;
+    private const SQLiteOpenFlags OpenFlags =
+        SQLiteOpenFlags.ReadWrite | SQLiteOpenFlags.Create | SQLiteOpenFlags.SharedCache;
+
+    private SQLiteAsyncConnection _db;
+    private readonly string _databasePath;
     private readonly SemaphoreSlim _initLock = new(1, 1);
     private volatile bool _initialized;
 
     public AppDatabase(string databasePath)
     {
         SQLitePCL.Batteries_V2.Init();
-        _db = new SQLiteAsyncConnection(databasePath,
-            SQLiteOpenFlags.ReadWrite | SQLiteOpenFlags.Create | SQLiteOpenFlags.SharedCache);
+        _databasePath = databasePath;
+        _db = new SQLiteAsyncConnection(databasePath, OpenFlags);
     }
 
     /// <summary>Ordered migrations; index + 1 is the resulting user_version.</summary>
@@ -118,6 +122,79 @@ public class AppDatabase
 
     /// <summary>Closes the underlying connection (releases the file lock). Used by tests and app shutdown.</summary>
     public Task CloseAsync() => _db.CloseAsync();
+
+    // ---- Backup & restore ----
+
+    /// <summary>
+    /// Writes a consistent snapshot of the live database to <paramref name="destinationPath"/>
+    /// via the SQLite backup API — safe while the connection is open, no torn copy.
+    /// </summary>
+    public Task CreateBackupAsync(string destinationPath) => _db.BackupAsync(destinationPath);
+
+    /// <summary>
+    /// Checks a candidate backup file without touching the live database: integrity_check,
+    /// all core tables present, and not written by a newer app version.
+    /// </summary>
+    public static async Task<BackupFileStatus> ValidateBackupFileAsync(string path)
+    {
+        SQLitePCL.Batteries_V2.Init();
+        var conn = new SQLiteAsyncConnection(path, SQLiteOpenFlags.ReadOnly);
+        try
+        {
+            var integrity = await conn.ExecuteScalarAsync<string>("PRAGMA integrity_check");
+            if (!string.Equals(integrity, "ok", StringComparison.OrdinalIgnoreCase))
+                return BackupFileStatus.Invalid;
+
+            var tables = await conn.QueryScalarsAsync<string>(
+                "SELECT name FROM sqlite_master WHERE type = 'table'");
+            string[] required = ["AppSettings", "Split", "Exercise", "SplitExercise", "Session", "SessionEntry"];
+            if (required.Any(t => !tables.Contains(t, StringComparer.OrdinalIgnoreCase)))
+                return BackupFileStatus.Invalid;
+
+            var version = await conn.ExecuteScalarAsync<int>("PRAGMA user_version");
+            if (version > Migrations.Length)
+                return BackupFileStatus.NewerAppVersion;
+
+            return BackupFileStatus.Valid;
+        }
+        catch (SQLiteException)
+        {
+            // Garbage files open lazily and throw on the first query.
+            return BackupFileStatus.Invalid;
+        }
+        finally
+        {
+            await conn.CloseAsync();
+        }
+    }
+
+    /// <summary>
+    /// Replaces the live database with an already-validated backup file: close, swap the
+    /// file, reopen, re-run migrations (older backups are migrated forward). The instance
+    /// stays valid — no app restart needed. Throws if the source can't be copied; the
+    /// connection is reopened onto the untouched original in that case.
+    /// </summary>
+    public async Task RestoreFromFileAsync(string sourceFilePath)
+    {
+        await _initLock.WaitAsync();
+        try
+        {
+            _initialized = false;
+            await _db.CloseAsync();
+            File.Copy(sourceFilePath, _databasePath, overwrite: true);
+            // Stale sidecars from the previous database would corrupt the swapped file.
+            foreach (var suffix in new[] { "-wal", "-shm", "-journal" })
+                if (File.Exists(_databasePath + suffix))
+                    File.Delete(_databasePath + suffix);
+        }
+        finally
+        {
+            // Always reopen, even when the copy failed — the old data is still on disk.
+            _db = new SQLiteAsyncConnection(_databasePath, OpenFlags);
+            _initLock.Release();
+        }
+        await InitializeAsync();
+    }
 
     // ---- Settings ----
 
