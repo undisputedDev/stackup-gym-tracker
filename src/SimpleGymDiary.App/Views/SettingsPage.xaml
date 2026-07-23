@@ -52,6 +52,14 @@
                 </Picker>
             </Border>
 
+            <Label Text="About" Style="{StaticResource SectionTitle}" />
+            <Button Text="Send feedback"
+                    FontFamily="OpenSansSemibold"
+                    HeightRequest="52" CornerRadius="12"
+                    Command="{Binding SendFeedbackCommand}" />
+            <Label Text="{Binding VersionText}"
+                   Style="{StaticResource Hint}" HorizontalOptions="Center" />
+
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

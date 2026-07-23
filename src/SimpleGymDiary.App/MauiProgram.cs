@@ -1,6 +1,8 @@
 using CommunityToolkit.Maui;
 using LiveChartsCore.SkiaSharpView.Maui;
 using Microsoft.Extensions.Logging;
+using Plugin.Maui.AppRating;
+using SimpleGymDiary.App.Services;
 using SimpleGymDiary.App.ViewModels;
 using SimpleGymDiary.App.Views;
 using SimpleGymDiary.Core.Data;
@@ -32,6 +34,9 @@ public static class MauiProgram
         // Data layer: one shared async connection for the app's lifetime.
         builder.Services.AddSingleton(_ =>
             new AppDatabase(Path.Combine(FileSystem.AppDataDirectory, "gymdiary.db3")));
+
+        builder.Services.AddSingleton(AppRating.Default);
+        builder.Services.AddSingleton<ReviewPrompter>();
 
         // Pages + ViewModels (transient; state lives in the DB).
         builder.Services.AddTransient<WorkoutHomePage>();

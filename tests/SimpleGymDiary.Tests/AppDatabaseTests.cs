@@ -202,6 +202,23 @@ public sealed class AppDatabaseTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task ReviewTracking_DefaultsAndRoundTrips()
+    {
+        var db = await CreateAsync();
+        var settings = await db.GetSettingsAsync();
+        Assert.Equal(0, settings.ReviewRequestCount);
+        Assert.Null(settings.LastReviewRequestUtc);
+
+        settings.ReviewRequestCount = 2;
+        settings.LastReviewRequestUtc = new DateTime(2026, 7, 1, 10, 0, 0, DateTimeKind.Utc);
+        await db.SaveSettingsAsync(settings);
+
+        var reloaded = await db.GetSettingsAsync();
+        Assert.Equal(2, reloaded.ReviewRequestCount);
+        Assert.Equal(settings.LastReviewRequestUtc, reloaded.LastReviewRequestUtc);
+    }
+
+    [Fact]
     public async Task IsVisibleInStats_DefaultsTrue_AndPersists()
     {
         var db = await CreateAsync();

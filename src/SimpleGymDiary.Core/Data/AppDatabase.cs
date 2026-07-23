@@ -65,6 +65,13 @@ public class AppDatabase
             }
             await SeedData.EnsurePresetsAsync(db);
         },
+
+        // v4: store-review request tracking
+        async db =>
+        {
+            await AddColumnIfMissingAsync(db, "AppSettings", "ReviewRequestCount", "INTEGER NOT NULL DEFAULT 0");
+            await AddColumnIfMissingAsync(db, "AppSettings", "LastReviewRequestUtc", "INTEGER");
+        },
     ];
 
     private static async Task AddColumnIfMissingAsync(SQLiteAsyncConnection db, string table, string column, string definition)

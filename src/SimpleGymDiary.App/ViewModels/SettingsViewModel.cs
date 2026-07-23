@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using SimpleGymDiary.Core.Data;
 using SimpleGymDiary.Core.Entities;
 using SimpleGymDiary.Core.Enums;
@@ -108,4 +109,26 @@ public partial class SettingsViewModel : ObservableObject
             _ = _db.SaveSettingsAsync(_settings);
     }
 
+    private const string FeedbackAddress = "apapenfuss.mosaic@gmail.com";
+
+    public string VersionText => $"Simple Gym Diary {AppInfo.Current.VersionString}";
+
+    [RelayCommand]
+    private async Task SendFeedbackAsync()
+    {
+        var subject = "Simple Gym Diary — Feedback";
+        try
+        {
+            await Email.Default.ComposeAsync(new EmailMessage { Subject = subject, To = [FeedbackAddress] });
+        }
+        catch (FeatureNotSupportedException)
+        {
+            // No mail app registered — fall back to a mailto: link.
+            await Launcher.Default.OpenAsync(new Uri($"mailto:{FeedbackAddress}?subject={Uri.EscapeDataString(subject)}"));
+        }
+        catch
+        {
+            // User canceled or no handler at all — nothing to do.
+        }
+    }
 }

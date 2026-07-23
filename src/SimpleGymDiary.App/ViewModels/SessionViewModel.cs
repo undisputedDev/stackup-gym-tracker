@@ -13,13 +13,16 @@ namespace SimpleGymDiary.App.ViewModels;
 public partial class SessionViewModel : ObservableObject
 {
     private readonly AppDatabase _db;
+    private readonly Services.ReviewPrompter _reviewPrompter;
 
     private int? _prevSessionId;
     private int? _nextSessionId;
+    private bool _finishedWithProgress;
 
-    public SessionViewModel(AppDatabase db)
+    public SessionViewModel(AppDatabase db, Services.ReviewPrompter reviewPrompter)
     {
         _db = db;
+        _reviewPrompter = reviewPrompter;
         Title = "";
         HeaderText = "";
         SummaryStatsUp = SummaryStatsKeep = SummaryStatsDown = "";
@@ -149,6 +152,7 @@ public partial class SessionViewModel : ObservableObject
         await _db.CompleteSessionAsync(SessionId, now);
 
         var logged = Entries.Where(e => e.HasLoggedData).ToList();
+        _finishedWithProgress = logged.Any(e => e.Entry.Mark == Mark.Up);
         SummaryStatsUp = $"▲ {logged.Count(e => e.Entry.Mark == Mark.Up)}";
         SummaryStatsKeep = $"▬ {logged.Count(e => e.Entry.Mark == Mark.Keep)}";
         SummaryStatsDown = $"▼ {logged.Count(e => e.Entry.Mark == Mark.Down)}";
@@ -170,6 +174,8 @@ public partial class SessionViewModel : ObservableObject
     {
         IsSummaryVisible = false;
         await Shell.Current.GoToAsync("..");
+        // Peak-happiness moment: milestone reached + progress made -> maybe ask for a review.
+        await _reviewPrompter.TryRequestAsync(_finishedWithProgress);
     }
 }
 

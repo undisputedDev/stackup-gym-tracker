@@ -25,4 +25,9 @@ public class AppSettings
     public CountingSetRule DefaultCountingSetRule { get; set; } = CountingSetRule.FirstSet;
 
     public int DefaultSetCount { get; set; } = 3;
+
+    /// <summary>How often the store review dialog has been requested (lifetime cap applies).</summary>
+    public int ReviewRequestCount { get; set; }
+
+    public DateTime? LastReviewRequestUtc { get; set; }
 }
