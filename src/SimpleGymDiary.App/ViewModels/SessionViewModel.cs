@@ -215,6 +215,7 @@ public partial class SessionEntryViewModel : ObservableObject
 
     public bool IsWeightBased => Exercise.TrackingType == TrackingType.WeightBased;
     public string UnitLabel => UnitConverter.UnitLabel(_unit);
+    public string IconSource => $"icon_{Exercise.IconKey}.png";
 
     /// <summary>True once any set has reps (or a manual mark was made) — drives stripe + summary.</summary>
     public bool HasLoggedData => Sets.Any(s => s.Reps > 0) || Entry.MarkIsManual;

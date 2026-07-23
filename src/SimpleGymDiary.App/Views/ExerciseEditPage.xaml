@@ -2,6 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:SimpleGymDiary.App.ViewModels"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="SimpleGymDiary.App.Views.ExerciseEditPage"
              x:DataType="vm:ExerciseEditViewModel"
              Title="{Binding PageTitle}">
@@ -23,6 +24,34 @@
                             </x:Array>
                         </Picker.ItemsSource>
                     </Picker>
+
+                    <Label Text="Icon" Style="{StaticResource SectionTitle}" Margin="0,8,0,0" />
+                    <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+                    <HorizontalStackLayout Spacing="8" BindableLayout.ItemsSource="{Binding IconChoices}">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="vm:IconChoiceViewModel">
+                                <Border StrokeShape="RoundRectangle 10"
+                                        StrokeThickness="2"
+                                        Padding="7"
+                                        Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}">
+                                    <Border.Triggers>
+                                        <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
+                                            <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                                        </DataTrigger>
+                                    </Border.Triggers>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding SelectCommand}" />
+                                    </Border.GestureRecognizers>
+                                    <Image Source="{Binding Source}" WidthRequest="20" HeightRequest="20">
+                                        <Image.Behaviors>
+                                            <toolkit:IconTintColorBehavior TintColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                                        </Image.Behaviors>
+                                    </Image>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </HorizontalStackLayout>
+                    </ScrollView>
                 </VerticalStackLayout>
             </Border>
 

@@ -51,6 +51,20 @@ public class AppDatabase
                 WHERE ExerciseNameSnapshot = ''
                 """);
         },
+
+        // v3: exercise icons + expanded preset library (PPL + Full Body)
+        async db =>
+        {
+            await AddColumnIfMissingAsync(db, "Exercise", "IconKey", "TEXT NOT NULL DEFAULT 'dumbbell'");
+            // Backfill icons for exercises that match a preset by name.
+            foreach (var preset in SeedData.Exercises)
+            {
+                await db.ExecuteAsync(
+                    "UPDATE Exercise SET IconKey = ? WHERE Name = ? COLLATE NOCASE AND IconKey = 'dumbbell'",
+                    preset.IconKey, preset.Name);
+            }
+            await SeedData.EnsurePresetsAsync(db);
+        },
     ];
 
     private static async Task AddColumnIfMissingAsync(SQLiteAsyncConnection db, string table, string column, string definition)

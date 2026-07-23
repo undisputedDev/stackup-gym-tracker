@@ -107,6 +107,7 @@ public partial class StatsViewModel : ObservableObject
         {
             Title = exercise.Name,
             Subtitle = latest,
+            IconSource = $"icon_{exercise.IconKey}.png",
             HasData = points.Count > 0,
             Series =
             [
@@ -150,6 +151,7 @@ public class ExerciseStatCardViewModel
 {
     public required string Title { get; init; }
     public required string Subtitle { get; init; }
+    public required string IconSource { get; init; }
     public required bool HasData { get; init; }
     public ISeries[] Series { get; init; } = [];
     public Axis[] XAxes { get; init; } = [];

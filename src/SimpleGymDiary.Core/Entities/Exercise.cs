@@ -17,6 +17,9 @@ public class Exercise
 
     public TrackingType TrackingType { get; set; } = TrackingType.WeightBased;
 
+    /// <summary>Movement-glyph key, resolved to Resources/Images/icon_{key}.svg. See SeedData.IconKeys.</summary>
+    public string IconKey { get; set; } = "dumbbell";
+
     public int? RepRangeMinOverride { get; set; }
 
     public int? RepRangeMaxOverride { get; set; }

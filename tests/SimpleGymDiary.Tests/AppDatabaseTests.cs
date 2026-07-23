@@ -38,14 +38,30 @@ public sealed class AppDatabaseTests : IAsyncLifetime
         Assert.Equal(2.5, settings.DefaultWeightIncrementKg);
 
         var splits = await db.GetSplitsAsync();
-        Assert.Equal(["Upper Body", "Lower Body"], splits.Select(s => s.Name).ToArray());
+        Assert.Equal(["Upper Body", "Lower Body", "Push Day", "Pull Day", "Leg Day", "Full Body"],
+            splits.Select(s => s.Name).ToArray());
 
         var upper = await db.GetSplitExercisesAsync(splits[0].Id);
         Assert.Equal(["Lat Pulldown", "Rowing", "Bench Press", "Butterfly", "Lateral Raise"],
             upper.Select(e => e.Name).ToArray());
 
-        var lower = await db.GetSplitExercisesAsync(splits[1].Id);
-        Assert.Equal(5, lower.Count);
+        // Shared exercises are reused across splits, not duplicated.
+        var exercises = await db.GetExercisesAsync();
+        Assert.Equal(SeedData.Exercises.Length, exercises.Count);
+        Assert.Single(exercises, e => e.Name == "Bench Press");
+    }
+
+    [Fact]
+    public async Task Seed_AssignsIconsAndTrackingTypes()
+    {
+        var db = await CreateAsync();
+        var exercises = await db.GetExercisesAsync();
+
+        Assert.Equal("pulldown", exercises.First(e => e.Name == "Lat Pulldown").IconKey);
+        Assert.Equal("legs", exercises.First(e => e.Name == "Squat").IconKey);
+        var pullUps = exercises.First(e => e.Name == "Pull-Ups");
+        Assert.Equal(TrackingType.RepBased, pullUps.TrackingType);
+        Assert.Equal("pulldown", pullUps.IconKey);
     }
 
     [Fact]
@@ -55,7 +71,21 @@ public sealed class AppDatabaseTests : IAsyncLifetime
         // Second connection to the same file: migrations must not re-run.
         var db2 = await CreateAsync();
 
-        Assert.Equal(2, (await db2.GetSplitsAsync()).Count);
+        Assert.Equal(SeedData.Splits.Length, (await db2.GetSplitsAsync()).Count);
+        Assert.Equal(SeedData.Exercises.Length, (await db2.GetExercisesAsync()).Count);
+    }
+
+    [Fact]
+    public async Task EnsurePresets_RespectsUserDeletions_ByName()
+    {
+        var db = await CreateAsync();
+        var splits = await db.GetSplitsAsync();
+        var pushDay = splits.First(s => s.Name == "Push Day");
+        await db.ArchiveSplitAsync(pushDay.Id);
+
+        // Re-running the preset seeder must not resurrect the archived split.
+        var db2 = await CreateAsync();
+        Assert.DoesNotContain(await db2.GetSplitsAsync(), s => s.Name == "Push Day");
     }
 
     [Fact]

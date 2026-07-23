@@ -1,0 +1,7 @@
+<svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <!-- fly: arms closing to the center -->
+    <line x1="6" y1="24" x2="18" y2="24" />
+    <polyline points="12,17 19,24 12,31" />
+    <line x1="42" y1="24" x2="30" y2="24" />
+    <polyline points="36,17 29,24 36,31" />
+</svg>

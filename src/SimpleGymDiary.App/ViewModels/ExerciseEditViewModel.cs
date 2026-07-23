@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using System.Collections.ObjectModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SimpleGymDiary.Core.Data;
 using SimpleGymDiary.Core.Entities;
@@ -25,6 +26,19 @@ public partial class ExerciseEditViewModel : ObservableObject
         Name = "";
         RepMinText = RepMaxText = IncrementText = RepIncrementText = "";
         RepMinPlaceholder = RepMaxPlaceholder = IncrementPlaceholder = RepIncrementPlaceholder = "";
+        foreach (var key in SeedData.IconKeys)
+            IconChoices.Add(new IconChoiceViewModel(this, key));
+        SelectIcon("dumbbell");
+    }
+
+    public ObservableCollection<IconChoiceViewModel> IconChoices { get; } = [];
+
+    /// <summary>Marks the given key as selected in the picker (and remembers it for saving).</summary>
+    public void SelectIcon(string key)
+    {
+        _exercise.IconKey = key;
+        foreach (var choice in IconChoices)
+            choice.IsSelected = choice.Key == key;
     }
 
     [ObservableProperty]
@@ -82,6 +96,7 @@ public partial class ExerciseEditViewModel : ObservableObject
             RepMaxText = existing.RepRangeMaxOverride?.ToString() ?? "";
             IncrementText = existing.WeightIncrementKgOverride?.ToString("0.##") ?? "";
             RepIncrementText = existing.RepIncrementOverride?.ToString() ?? "";
+            SelectIcon(existing.IconKey);
         }
     }
 
@@ -127,4 +142,26 @@ public partial class ExerciseEditViewModel : ObservableObject
 
     private static int? ParseIntOrNull(string text) =>
         int.TryParse(text, out var v) ? v : null;
+}
+
+/// <summary>One selectable movement glyph in the icon picker.</summary>
+public partial class IconChoiceViewModel : ObservableObject
+{
+    private readonly ExerciseEditViewModel _parent;
+
+    public IconChoiceViewModel(ExerciseEditViewModel parent, string key)
+    {
+        _parent = parent;
+        Key = key;
+    }
+
+    public string Key { get; }
+
+    public string Source => $"icon_{Key}.png";
+
+    [ObservableProperty]
+    public partial bool IsSelected { get; set; }
+
+    [RelayCommand]
+    private void Select() => _parent.SelectIcon(Key);
 }

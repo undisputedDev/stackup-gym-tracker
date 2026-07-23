@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:SimpleGymDiary.App.ViewModels"
              xmlns:entities="clr-namespace:SimpleGymDiary.Core.Entities;assembly=SimpleGymDiary.Core"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="SimpleGymDiary.App.Views.SplitDetailPage"
              x:DataType="vm:SplitDetailViewModel"
              Title="{Binding Name}">
@@ -22,27 +23,35 @@
                 <BindableLayout.ItemTemplate>
                     <DataTemplate x:DataType="entities:Exercise">
                         <Border Style="{StaticResource Card}" Padding="12">
-                            <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="4">
-                                <Label Text="{Binding Name}" FontSize="16" VerticalOptions="Center">
+                            <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto" ColumnSpacing="4">
+                                <Image Source="{Binding IconKey, StringFormat='icon_{0}.png'}"
+                                       WidthRequest="22" HeightRequest="22"
+                                       Margin="4,0,8,0"
+                                       VerticalOptions="Center">
+                                    <Image.Behaviors>
+                                        <toolkit:IconTintColorBehavior TintColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                                    </Image.Behaviors>
+                                </Image>
+                                <Label Grid.Column="1" Text="{Binding Name}" FontSize="16" VerticalOptions="Center">
                                     <Label.GestureRecognizers>
                                         <TapGestureRecognizer
                                             Command="{Binding EditExerciseCommand, Source={RelativeSource AncestorType={x:Type vm:SplitDetailViewModel}}}"
                                             CommandParameter="{Binding .}" />
                                     </Label.GestureRecognizers>
                                 </Label>
-                                <Button Grid.Column="1" Text="↑" FontSize="16"
+                                <Button Grid.Column="2" Text="↑" FontSize="16"
                                         WidthRequest="40" HeightRequest="40" Padding="0" CornerRadius="10"
                                         BackgroundColor="Transparent"
                                         TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray300}}"
                                         Command="{Binding MoveUpCommand, Source={RelativeSource AncestorType={x:Type vm:SplitDetailViewModel}}}"
                                         CommandParameter="{Binding .}" />
-                                <Button Grid.Column="2" Text="↓" FontSize="16"
+                                <Button Grid.Column="3" Text="↓" FontSize="16"
                                         WidthRequest="40" HeightRequest="40" Padding="0" CornerRadius="10"
                                         BackgroundColor="Transparent"
                                         TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray300}}"
                                         Command="{Binding MoveDownCommand, Source={RelativeSource AncestorType={x:Type vm:SplitDetailViewModel}}}"
                                         CommandParameter="{Binding .}" />
-                                <Button Grid.Column="3" Text="✕" FontSize="14"
+                                <Button Grid.Column="4" Text="✕" FontSize="14"
                                         WidthRequest="40" HeightRequest="40" Padding="0" CornerRadius="10"
                                         BackgroundColor="Transparent"
                                         TextColor="{StaticResource MarkDown}"

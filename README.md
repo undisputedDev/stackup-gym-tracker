@@ -20,7 +20,7 @@ killed mid-session — sessions are resumable).
 
 ## Features
 
-- **Splits & exercises**: seeded Upper/Lower 2-day preset, fully customizable
+- **Splits & exercises**: ships the common presets — Upper/Lower, Push/Pull/Legs, Full Body — with a shared 20-exercise library (movement icons included), fully customizable
 - **Two tracking types**: weight-based (machines/barbell) and rep-based (bodyweight)
 - **Global defaults + per-exercise overrides** for rep range, increments, counting-set rule
 - **Stats**: progression chart per exercise (LiveCharts2), 3M / 1Y / All ranges

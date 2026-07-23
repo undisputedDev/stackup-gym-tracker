@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:SimpleGymDiary.App.ViewModels"
              xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.Maui;assembly=LiveChartsCore.SkiaSharpView.Maui"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="SimpleGymDiary.App.Views.StatsPage"
              x:DataType="vm:StatsViewModel"
              Title="Stats">
@@ -46,9 +47,17 @@
                     <DataTemplate x:DataType="vm:ExerciseStatCardViewModel">
                         <Border Style="{StaticResource Card}" Padding="12">
                             <VerticalStackLayout Spacing="6">
-                                <Grid ColumnDefinitions="*,Auto">
-                                    <Label Text="{Binding Title}" FontFamily="OpenSansSemibold" FontSize="16" />
-                                    <Label Grid.Column="1" Text="{Binding Subtitle}" Style="{StaticResource Hint}"
+                                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                                    <Image Source="{Binding IconSource}"
+                                           WidthRequest="20" HeightRequest="20"
+                                           VerticalOptions="Center">
+                                        <Image.Behaviors>
+                                            <toolkit:IconTintColorBehavior TintColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                                        </Image.Behaviors>
+                                    </Image>
+                                    <Label Grid.Column="1" Text="{Binding Title}" FontFamily="OpenSansSemibold" FontSize="16"
+                                           VerticalOptions="Center" />
+                                    <Label Grid.Column="2" Text="{Binding Subtitle}" Style="{StaticResource Hint}"
                                            VerticalOptions="Center" />
                                 </Grid>
                                 <lvc:CartesianChart Series="{Binding Series}"
