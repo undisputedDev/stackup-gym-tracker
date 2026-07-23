@@ -109,7 +109,8 @@ public partial class SettingsViewModel : ObservableObject
             _ = _db.SaveSettingsAsync(_settings);
     }
 
-    private const string FeedbackAddress = "undisputed140188+feedback@gmail.com";
+    // TODO before store release: replace with the dedicated feedback address.
+    private const string FeedbackAddress = "feedback-address-not-set@example.com";
 
     public string VersionText => $"Simple Gym Diary {AppInfo.Current.VersionString}";
 
