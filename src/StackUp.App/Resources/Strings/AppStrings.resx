@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+
+  <!-- Tabs -->
+  <data name="Tab_Workout" xml:space="preserve"><value>Workout</value></data>
+  <data name="Tab_Splits" xml:space="preserve"><value>Splits</value></data>
+  <data name="Tab_Stats" xml:space="preserve"><value>Stats</value></data>
+  <data name="Tab_Settings" xml:space="preserve"><value>Settings</value></data>
+
+  <!-- Common -->
+  <data name="Common_OK" xml:space="preserve"><value>OK</value></data>
+  <data name="Common_Cancel" xml:space="preserve"><value>Cancel</value></data>
+  <data name="Common_Save" xml:space="preserve"><value>Save</value></data>
+  <data name="Common_Delete" xml:space="preserve"><value>Delete</value></data>
+  <data name="Common_Create" xml:space="preserve"><value>Create</value></data>
+
+  <!-- Workout home -->
+  <data name="Home_SessionInProgress" xml:space="preserve"><value>Session in progress</value></data>
+  <data name="Home_ResumeFormat" xml:space="preserve"><value>Resume {0} — started {1}</value></data>
+  <data name="Home_SessionFallback" xml:space="preserve"><value>session</value></data>
+  <data name="Home_MomentumFormat" xml:space="preserve"><value>Week {0} · {1} sessions</value></data>
+  <data name="Home_StartASession" xml:space="preserve"><value>Start a session</value></data>
+  <data name="Home_Start" xml:space="preserve"><value>Start</value></data>
+  <data name="Home_NotDoneYet" xml:space="preserve"><value>Not done yet</value></data>
+  <data name="Home_DoneToday" xml:space="preserve"><value>Done today</value></data>
+  <data name="Home_LastDoneYesterday" xml:space="preserve"><value>Last done yesterday</value></data>
+  <data name="Home_LastDoneDaysFormat" xml:space="preserve"><value>Last done {0} days ago</value></data>
+  <data name="Home_NoSplitsYet" xml:space="preserve"><value>No splits yet — create one in the Splits tab.</value></data>
+
+  <!-- Splits list -->
+  <data name="Splits_EmptyList" xml:space="preserve"><value>No splits yet. Tap Add to create your first training day.</value></data>
+  <data name="Splits_AddSemantic" xml:space="preserve"><value>Add split</value></data>
+  <data name="Splits_NewSplitTitle" xml:space="preserve"><value>New split</value></data>
+  <data name="Splits_NewSplitPrompt" xml:space="preserve"><value>Name of the training day:</value></data>
+  <data name="Splits_ExerciseCountFormat" xml:space="preserve"><value>{0} exercises</value></data>
+
+  <!-- Split detail -->
+  <data name="SplitDetail_Rename" xml:space="preserve"><value>Rename</value></data>
+  <data name="SplitDetail_RenameTitle" xml:space="preserve"><value>Rename split</value></data>
+  <data name="SplitDetail_NamePrompt" xml:space="preserve"><value>Name:</value></data>
+  <data name="SplitDetail_ExercisesHeader" xml:space="preserve"><value>Exercises (in workout order)</value></data>
+  <data name="SplitDetail_ReorderFooter" xml:space="preserve"><value>Hold and drag to reorder · tap a name to edit its settings.</value></data>
+  <data name="SplitDetail_EmptyList" xml:space="preserve"><value>No exercises yet — add your first one below.</value></data>
+  <data name="SplitDetail_AddExercise" xml:space="preserve"><value>Add exercise</value></data>
+  <data name="SplitDetail_NewExerciseOption" xml:space="preserve"><value>New exercise…</value></data>
+  <data name="SplitDetail_DeleteTitle" xml:space="preserve"><value>Delete split</value></data>
+  <data name="SplitDetail_DeleteConfirmFormat" xml:space="preserve"><value>Remove "{0}" from your plan? Completed sessions are kept.</value></data>
+
+  <!-- Exercise edit -->
+  <data name="ExerciseEdit_NewTitle" xml:space="preserve"><value>New exercise</value></data>
+  <data name="ExerciseEdit_EditTitle" xml:space="preserve"><value>Edit exercise</value></data>
+  <data name="ExerciseEdit_Name" xml:space="preserve"><value>Name</value></data>
+  <data name="ExerciseEdit_NamePlaceholder" xml:space="preserve"><value>e.g. Lat Pulldown</value></data>
+  <data name="ExerciseEdit_Tracking" xml:space="preserve"><value>Tracking</value></data>
+  <data name="ExerciseEdit_TrackingWeight" xml:space="preserve"><value>Weight (kg on a machine/bar)</value></data>
+  <data name="ExerciseEdit_TrackingReps" xml:space="preserve"><value>Reps (bodyweight, e.g. pull-ups)</value></data>
+  <data name="ExerciseEdit_Icon" xml:space="preserve"><value>Icon</value></data>
+  <data name="ExerciseEdit_OverridesHeader" xml:space="preserve"><value>Overrides — leave empty to use the global defaults</value></data>
+  <data name="ExerciseEdit_DefaultFormat" xml:space="preserve"><value>Default: {0}</value></data>
+  <data name="ExerciseEdit_MissingNameTitle" xml:space="preserve"><value>Missing name</value></data>
+  <data name="ExerciseEdit_MissingNameText" xml:space="preserve"><value>Please enter an exercise name.</value></data>
+  <data name="ExerciseEdit_DeleteTitle" xml:space="preserve"><value>Delete exercise</value></data>
+  <data name="ExerciseEdit_DeleteConfirmFormat" xml:space="preserve"><value>Remove "{0}" from all splits? Your history is kept.</value></data>
+
+  <!-- Shared field labels (Settings + ExerciseEdit) -->
+  <data name="Field_RepRangeMin" xml:space="preserve"><value>Rep range min</value></data>
+  <data name="Field_RepRangeMax" xml:space="preserve"><value>Rep range max</value></data>
+  <data name="Field_WeightIncrement" xml:space="preserve"><value>Weight increment (kg)</value></data>
+  <data name="Field_RepIncrement" xml:space="preserve"><value>Rep increment</value></data>
+  <data name="Field_SetsPerExercise" xml:space="preserve"><value>Sets per exercise</value></data>
+
+  <!-- Session -->
+  <data name="Session_WorkoutFallback" xml:space="preserve"><value>Workout</value></data>
+  <data name="Session_InProgress" xml:space="preserve"><value>In progress</value></data>
+  <data name="Session_ReadOnlyFormat" xml:space="preserve"><value>{0} · read-only</value></data>
+  <data name="Session_RepsPerSet" xml:space="preserve"><value>Reps per set</value></data>
+  <data name="Session_TargetFormat" xml:space="preserve"><value>Target {0}–{1}</value></data>
+  <data name="Session_SuggestedFormat" xml:space="preserve"><value>suggested {0} {1}</value></data>
+  <data name="Session_DeloadFormat" xml:space="preserve"><value>Deload {0} {1}</value></data>
+  <data name="Session_AimForFormat" xml:space="preserve"><value>aim for {0}</value></data>
+  <data name="Session_LastFormat" xml:space="preserve"><value>last {0} @ {1}</value></data>
+  <data name="Session_LastRepsFormat" xml:space="preserve"><value>last {0}</value></data>
+  <data name="Session_Finish" xml:space="preserve"><value>Finish workout</value></data>
+  <data name="Session_Complete" xml:space="preserve"><value>Workout complete</value></data>
+  <data name="Session_DurationFormat" xml:space="preserve"><value>{0} min</value></data>
+  <data name="Session_NextTime" xml:space="preserve"><value>Next time</value></data>
+  <data name="Session_AllKeep" xml:space="preserve"><value>All weights stay — solid session.</value></data>
+  <data name="Session_SummaryWeightFormat" xml:space="preserve"><value>{0}   {1} → {2} {3}</value></data>
+  <data name="Session_DeloadSuffix" xml:space="preserve"><value> (deload)</value></data>
+  <data name="Session_SummaryAimFormat" xml:space="preserve"><value>{0}   aim for {1} reps</value></data>
+  <data name="Session_NewBestWeightFormat" xml:space="preserve"><value>New best: {0} {1} {2}</value></data>
+  <data name="Session_NewBestRepsFormat" xml:space="preserve"><value>New best: {0} {1} reps</value></data>
+  <data name="Session_Done" xml:space="preserve"><value>Done</value></data>
+  <data name="Session_Discard" xml:space="preserve"><value>Discard session</value></data>
+  <data name="Session_DiscardConfirm" xml:space="preserve"><value>Discard this session? Logged sets are lost.</value></data>
+  <data name="Session_DiscardAction" xml:space="preserve"><value>Discard</value></data>
+  <data name="Session_Delete" xml:space="preserve"><value>Delete session</value></data>
+  <data name="Session_DeleteConfirm" xml:space="preserve"><value>Delete this session from your history? Charts and next-time suggestions will no longer include it.</value></data>
+
+  <!-- Live consequence hint (arrow glyphs are appended in code) -->
+  <data name="Session_HintRepsPrefixFormat" xml:space="preserve"><value>{0} reps → </value></data>
+  <data name="Session_HintNextTimeFormat" xml:space="preserve"><value>next time {0} {1}</value></data>
+  <data name="Session_HintStaysFormat" xml:space="preserve"><value>{0} {1} stays</value></data>
+  <data name="Session_HintNextAimFormat" xml:space="preserve"><value>next time aim for {0}</value></data>
+  <data name="Session_HintAimAgainFormat" xml:space="preserve"><value>aim for {0} again</value></data>
+  <data name="Session_HintDeloadFormat" xml:space="preserve"><value>deload to {0} {1}</value></data>
+
+  <!-- Progression explainer -->
+  <data name="Explainer_Title" xml:space="preserve"><value>How progression works</value></data>
+  <data name="Explainer_Keep" xml:space="preserve"><value>Reps in the target range → the weight stays.</value></data>
+  <data name="Explainer_Up" xml:space="preserve"><value>Above the range → more weight next time.</value></data>
+  <data name="Explainer_Down" xml:space="preserve"><value>Below the range → less weight next time.</value></data>
+  <data name="Explainer_Override" xml:space="preserve"><value>Tap the arrow badge on a card to override the suggestion.</value></data>
+  <data name="Explainer_GotIt" xml:space="preserve"><value>Got it</value></data>
+
+  <!-- Stats -->
+  <data name="Stats_Filter" xml:space="preserve"><value>Filter</value></data>
+  <data name="Stats_Range3M" xml:space="preserve"><value>3M</value></data>
+  <data name="Stats_Range1Y" xml:space="preserve"><value>1Y</value></data>
+  <data name="Stats_RangeAll" xml:space="preserve"><value>All</value></data>
+  <data name="Stats_Reps" xml:space="preserve"><value>reps</value></data>
+  <data name="Stats_NoDataYet" xml:space="preserve"><value>no data yet</value></data>
+  <data name="Stats_EmptyFiltered" xml:space="preserve"><value>No exercises selected — open Filter to enable some.</value></data>
+
+  <!-- Settings -->
+  <data name="Settings_Units" xml:space="preserve"><value>Units</value></data>
+  <data name="Settings_UnitKg" xml:space="preserve"><value>Kilograms (kg)</value></data>
+  <data name="Settings_UnitLbs" xml:space="preserve"><value>Pounds (lbs)</value></data>
+  <data name="Settings_ProgressionDefaults" xml:space="preserve"><value>Progression defaults</value></data>
+  <data name="Settings_CountingSetQuestion" xml:space="preserve"><value>Which set decides the arrow?</value></data>
+  <data name="Settings_FirstSet" xml:space="preserve"><value>First set</value></data>
+  <data name="Settings_LastSet" xml:space="preserve"><value>Last set</value></data>
+  <data name="Settings_BestSet" xml:space="preserve"><value>Best set</value></data>
+  <data name="Settings_Data" xml:space="preserve"><value>Data</value></data>
+  <data name="Settings_CreateBackup" xml:space="preserve"><value>Create backup</value></data>
+  <data name="Settings_RestoreBackup" xml:space="preserve"><value>Restore backup</value></data>
+  <data name="Settings_Help" xml:space="preserve"><value>Help</value></data>
+  <data name="Settings_HowProgressionWorks" xml:space="preserve"><value>How progression works</value></data>
+  <data name="Settings_About" xml:space="preserve"><value>About</value></data>
+  <data name="Settings_SendFeedback" xml:space="preserve"><value>Send feedback</value></data>
+
+  <!-- Backup & restore -->
+  <data name="Backup_ShareTitle" xml:space="preserve"><value>StackUp backup</value></data>
+  <data name="Backup_PickerTitle" xml:space="preserve"><value>Choose a StackUp backup</value></data>
+  <data name="Backup_InvalidFile" xml:space="preserve"><value>The selected file is not a valid StackUp backup.</value></data>
+  <data name="Backup_NewerVersion" xml:space="preserve"><value>This backup was created by a newer version of StackUp. Update the app first.</value></data>
+  <data name="Backup_RestoreConfirm" xml:space="preserve"><value>This replaces all current data with the backup. This cannot be undone. Continue?</value></data>
+  <data name="Backup_RestoreAction" xml:space="preserve"><value>Restore</value></data>
+  <data name="Backup_Restored" xml:space="preserve"><value>Backup restored.</value></data>
+  <data name="Backup_FailedTitle" xml:space="preserve"><value>Backup failed</value></data>
+  <data name="Backup_RestoreFailedTitle" xml:space="preserve"><value>Restore failed</value></data>
+</root>

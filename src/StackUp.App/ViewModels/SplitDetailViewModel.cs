@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using StackUp.App.Resources.Strings;
 using StackUp.Core.Data;
 using StackUp.Core.Entities;
 
@@ -42,7 +43,8 @@ public partial class SplitDetailViewModel : ObservableObject
     [RelayCommand]
     private async Task RenameAsync()
     {
-        var name = await Shell.Current.DisplayPromptAsync("Rename split", "Name:", "Save", "Cancel", initialValue: Name);
+        var name = await Shell.Current.DisplayPromptAsync(AppStrings.SplitDetail_RenameTitle,
+            AppStrings.SplitDetail_NamePrompt, AppStrings.Common_Save, AppStrings.Common_Cancel, initialValue: Name);
         if (string.IsNullOrWhiteSpace(name) || _split is null)
             return;
         _split.Name = name.Trim();
@@ -56,11 +58,12 @@ public partial class SplitDetailViewModel : ObservableObject
         var all = await _db.GetExercisesAsync();
         var candidates = all.Where(e => Exercises.All(x => x.Id != e.Id)).ToList();
 
-        const string newOption = "New exercise…";
+        var newOption = AppStrings.SplitDetail_NewExerciseOption;
         var options = candidates.Select(c => c.Name).Append(newOption).ToArray();
-        var choice = await Shell.Current.DisplayActionSheetAsync("Add exercise", "Cancel", null, options);
+        var choice = await Shell.Current.DisplayActionSheetAsync(
+            AppStrings.SplitDetail_AddExercise, AppStrings.Common_Cancel, null, options);
 
-        if (choice is null or "Cancel")
+        if (choice is null || choice == AppStrings.Common_Cancel)
             return;
 
         if (choice == newOption)
@@ -91,8 +94,8 @@ public partial class SplitDetailViewModel : ObservableObject
     [RelayCommand]
     private async Task ArchiveSplitAsync()
     {
-        var confirmed = await Shell.Current.DisplayAlertAsync("Delete split",
-            $"Remove \"{Name}\" from your plan? Completed sessions are kept.", "Delete", "Cancel");
+        var confirmed = await Shell.Current.DisplayAlertAsync(AppStrings.SplitDetail_DeleteTitle,
+            string.Format(AppStrings.SplitDetail_DeleteConfirmFormat, Name), AppStrings.Common_Delete, AppStrings.Common_Cancel);
         if (!confirmed)
             return;
         await _db.ArchiveSplitAsync(SplitId);

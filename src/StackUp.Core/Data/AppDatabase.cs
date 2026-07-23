@@ -88,9 +88,23 @@ public class AppDatabase
         {
             await AddColumnIfMissingAsync(db, "SessionEntry", "IsDeloadSuggestion", "INTEGER NOT NULL DEFAULT 0");
         },
+
+        // v7: stable preset identity for cross-language seed idempotency. Backfill by
+        // English name only — every pre-existing install was seeded in English.
+        async db =>
+        {
+            await AddColumnIfMissingAsync(db, "Exercise", "PresetKey", "TEXT");
+            await AddColumnIfMissingAsync(db, "Split", "PresetKey", "TEXT");
+            foreach (var preset in SeedData.Exercises)
+                await db.ExecuteAsync("UPDATE Exercise SET PresetKey = ? WHERE PresetKey IS NULL AND Name = ? COLLATE NOCASE",
+                    preset.Key, preset.Name);
+            foreach (var preset in SeedData.Splits)
+                await db.ExecuteAsync("UPDATE Split SET PresetKey = ? WHERE PresetKey IS NULL AND Name = ? COLLATE NOCASE",
+                    preset.Key, preset.Name);
+        },
     ];
 
-    private static async Task AddColumnIfMissingAsync(SQLiteAsyncConnection db, string table, string column, string definition)
+    internal static async Task AddColumnIfMissingAsync(SQLiteAsyncConnection db, string table, string column, string definition)
     {
         // Fresh installs create the full schema in v1 (CreateTableAsync uses the current
         // entity classes), so later migrations must tolerate already-present columns.

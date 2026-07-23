@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+
+  <data name="Exercise_lat_pulldown" xml:space="preserve"><value>Latzug</value></data>
+  <data name="Exercise_rowing" xml:space="preserve"><value>Rudern</value></data>
+  <data name="Exercise_bench_press" xml:space="preserve"><value>Bankdrücken</value></data>
+  <data name="Exercise_butterfly" xml:space="preserve"><value>Butterfly</value></data>
+  <data name="Exercise_lateral_raise" xml:space="preserve"><value>Seitheben</value></data>
+  <data name="Exercise_lower_back" xml:space="preserve"><value>Rückenstrecker</value></data>
+  <data name="Exercise_leg_press" xml:space="preserve"><value>Beinpresse</value></data>
+  <data name="Exercise_leg_extension" xml:space="preserve"><value>Beinstrecker</value></data>
+  <data name="Exercise_hamstrings" xml:space="preserve"><value>Beinbeuger</value></data>
+  <data name="Exercise_hip_thrust" xml:space="preserve"><value>Hip Thrust</value></data>
+  <data name="Exercise_shoulder_press" xml:space="preserve"><value>Schulterdrücken</value></data>
+  <data name="Exercise_incline_press" xml:space="preserve"><value>Schrägbankdrücken</value></data>
+  <data name="Exercise_triceps_pushdown" xml:space="preserve"><value>Trizepsdrücken</value></data>
+  <data name="Exercise_biceps_curl" xml:space="preserve"><value>Bizeps-Curls</value></data>
+  <data name="Exercise_face_pull" xml:space="preserve"><value>Face Pulls</value></data>
+  <data name="Exercise_squat" xml:space="preserve"><value>Kniebeugen</value></data>
+  <data name="Exercise_calf_raise" xml:space="preserve"><value>Wadenheben</value></data>
+  <data name="Exercise_pull_ups" xml:space="preserve"><value>Klimmzüge</value></data>
+  <data name="Exercise_push_ups" xml:space="preserve"><value>Liegestütze</value></data>
+  <data name="Exercise_crunches" xml:space="preserve"><value>Crunches</value></data>
+
+  <data name="Split_upper_body" xml:space="preserve"><value>Oberkörper</value></data>
+  <data name="Split_lower_body" xml:space="preserve"><value>Unterkörper</value></data>
+  <data name="Split_push_day" xml:space="preserve"><value>Push-Tag</value></data>
+  <data name="Split_pull_day" xml:space="preserve"><value>Pull-Tag</value></data>
+  <data name="Split_leg_day" xml:space="preserve"><value>Beintag</value></data>
+  <data name="Split_full_body" xml:space="preserve"><value>Ganzkörper</value></data>
+</root>

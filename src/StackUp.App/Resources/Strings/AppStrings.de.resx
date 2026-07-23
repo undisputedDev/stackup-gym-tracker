@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+
+  <!-- Tabs -->
+  <data name="Tab_Workout" xml:space="preserve"><value>Workout</value></data>
+  <data name="Tab_Splits" xml:space="preserve"><value>Splits</value></data>
+  <data name="Tab_Stats" xml:space="preserve"><value>Statistik</value></data>
+  <data name="Tab_Settings" xml:space="preserve"><value>Einstellungen</value></data>
+
+  <!-- Common -->
+  <data name="Common_OK" xml:space="preserve"><value>OK</value></data>
+  <data name="Common_Cancel" xml:space="preserve"><value>Abbrechen</value></data>
+  <data name="Common_Save" xml:space="preserve"><value>Speichern</value></data>
+  <data name="Common_Delete" xml:space="preserve"><value>Löschen</value></data>
+  <data name="Common_Create" xml:space="preserve"><value>Erstellen</value></data>
+
+  <!-- Workout home -->
+  <data name="Home_SessionInProgress" xml:space="preserve"><value>Session läuft</value></data>
+  <data name="Home_ResumeFormat" xml:space="preserve"><value>{0} fortsetzen — gestartet {1}</value></data>
+  <data name="Home_SessionFallback" xml:space="preserve"><value>Session</value></data>
+  <data name="Home_MomentumFormat" xml:space="preserve"><value>Woche {0} · {1} Einheiten</value></data>
+  <data name="Home_StartASession" xml:space="preserve"><value>Training starten</value></data>
+  <data name="Home_Start" xml:space="preserve"><value>Start</value></data>
+  <data name="Home_NotDoneYet" xml:space="preserve"><value>Noch nicht trainiert</value></data>
+  <data name="Home_DoneToday" xml:space="preserve"><value>Heute absolviert</value></data>
+  <data name="Home_LastDoneYesterday" xml:space="preserve"><value>Zuletzt gestern</value></data>
+  <data name="Home_LastDoneDaysFormat" xml:space="preserve"><value>Zuletzt vor {0} Tagen</value></data>
+  <data name="Home_NoSplitsYet" xml:space="preserve"><value>Noch keine Splits — lege einen im Splits-Tab an.</value></data>
+
+  <!-- Splits list -->
+  <data name="Splits_EmptyList" xml:space="preserve"><value>Noch keine Splits. Tippe auf Hinzufügen für deinen ersten Trainingstag.</value></data>
+  <data name="Splits_AddSemantic" xml:space="preserve"><value>Split hinzufügen</value></data>
+  <data name="Splits_NewSplitTitle" xml:space="preserve"><value>Neuer Split</value></data>
+  <data name="Splits_NewSplitPrompt" xml:space="preserve"><value>Name des Trainingstags:</value></data>
+  <data name="Splits_ExerciseCountFormat" xml:space="preserve"><value>{0} Übungen</value></data>
+
+  <!-- Split detail -->
+  <data name="SplitDetail_Rename" xml:space="preserve"><value>Umbenennen</value></data>
+  <data name="SplitDetail_RenameTitle" xml:space="preserve"><value>Split umbenennen</value></data>
+  <data name="SplitDetail_NamePrompt" xml:space="preserve"><value>Name:</value></data>
+  <data name="SplitDetail_ExercisesHeader" xml:space="preserve"><value>Übungen (in Trainingsreihenfolge)</value></data>
+  <data name="SplitDetail_ReorderFooter" xml:space="preserve"><value>Halten und ziehen zum Sortieren · Name antippen zum Bearbeiten.</value></data>
+  <data name="SplitDetail_EmptyList" xml:space="preserve"><value>Noch keine Übungen — füge unten die erste hinzu.</value></data>
+  <data name="SplitDetail_AddExercise" xml:space="preserve"><value>Übung hinzufügen</value></data>
+  <data name="SplitDetail_NewExerciseOption" xml:space="preserve"><value>Neue Übung…</value></data>
+  <data name="SplitDetail_DeleteTitle" xml:space="preserve"><value>Split löschen</value></data>
+  <data name="SplitDetail_DeleteConfirmFormat" xml:space="preserve"><value>„{0}" aus deinem Plan entfernen? Abgeschlossene Einheiten bleiben erhalten.</value></data>
+
+  <!-- Exercise edit -->
+  <data name="ExerciseEdit_NewTitle" xml:space="preserve"><value>Neue Übung</value></data>
+  <data name="ExerciseEdit_EditTitle" xml:space="preserve"><value>Übung bearbeiten</value></data>
+  <data name="ExerciseEdit_Name" xml:space="preserve"><value>Name</value></data>
+  <data name="ExerciseEdit_NamePlaceholder" xml:space="preserve"><value>z. B. Latzug</value></data>
+  <data name="ExerciseEdit_Tracking" xml:space="preserve"><value>Erfassung</value></data>
+  <data name="ExerciseEdit_TrackingWeight" xml:space="preserve"><value>Gewicht (kg an Maschine/Hantel)</value></data>
+  <data name="ExerciseEdit_TrackingReps" xml:space="preserve"><value>Wiederholungen (Körpergewicht, z. B. Klimmzüge)</value></data>
+  <data name="ExerciseEdit_Icon" xml:space="preserve"><value>Symbol</value></data>
+  <data name="ExerciseEdit_OverridesHeader" xml:space="preserve"><value>Überschreibungen — leer lassen für die globalen Standards</value></data>
+  <data name="ExerciseEdit_DefaultFormat" xml:space="preserve"><value>Standard: {0}</value></data>
+  <data name="ExerciseEdit_MissingNameTitle" xml:space="preserve"><value>Name fehlt</value></data>
+  <data name="ExerciseEdit_MissingNameText" xml:space="preserve"><value>Bitte gib einen Übungsnamen ein.</value></data>
+  <data name="ExerciseEdit_DeleteTitle" xml:space="preserve"><value>Übung löschen</value></data>
+  <data name="ExerciseEdit_DeleteConfirmFormat" xml:space="preserve"><value>„{0}" aus allen Splits entfernen? Dein Verlauf bleibt erhalten.</value></data>
+
+  <!-- Shared field labels (Settings + ExerciseEdit) -->
+  <data name="Field_RepRangeMin" xml:space="preserve"><value>Wdh.-Bereich min</value></data>
+  <data name="Field_RepRangeMax" xml:space="preserve"><value>Wdh.-Bereich max</value></data>
+  <data name="Field_WeightIncrement" xml:space="preserve"><value>Gewichtsschritt (kg)</value></data>
+  <data name="Field_RepIncrement" xml:space="preserve"><value>Wdh.-Schritt</value></data>
+  <data name="Field_SetsPerExercise" xml:space="preserve"><value>Sätze pro Übung</value></data>
+
+  <!-- Session -->
+  <data name="Session_WorkoutFallback" xml:space="preserve"><value>Workout</value></data>
+  <data name="Session_InProgress" xml:space="preserve"><value>Läuft</value></data>
+  <data name="Session_ReadOnlyFormat" xml:space="preserve"><value>{0} · schreibgeschützt</value></data>
+  <data name="Session_RepsPerSet" xml:space="preserve"><value>Wdh. pro Satz</value></data>
+  <data name="Session_TargetFormat" xml:space="preserve"><value>Ziel {0}–{1}</value></data>
+  <data name="Session_SuggestedFormat" xml:space="preserve"><value>Vorschlag {0} {1}</value></data>
+  <data name="Session_DeloadFormat" xml:space="preserve"><value>Deload {0} {1}</value></data>
+  <data name="Session_AimForFormat" xml:space="preserve"><value>Ziel {0}</value></data>
+  <data name="Session_LastFormat" xml:space="preserve"><value>zuletzt {0} @ {1}</value></data>
+  <data name="Session_LastRepsFormat" xml:space="preserve"><value>zuletzt {0}</value></data>
+  <data name="Session_Finish" xml:space="preserve"><value>Training abschließen</value></data>
+  <data name="Session_Complete" xml:space="preserve"><value>Training abgeschlossen</value></data>
+  <data name="Session_DurationFormat" xml:space="preserve"><value>{0} min</value></data>
+  <data name="Session_NextTime" xml:space="preserve"><value>Nächstes Mal</value></data>
+  <data name="Session_AllKeep" xml:space="preserve"><value>Alle Gewichte bleiben — solide Einheit.</value></data>
+  <data name="Session_SummaryWeightFormat" xml:space="preserve"><value>{0}   {1} → {2} {3}</value></data>
+  <data name="Session_DeloadSuffix" xml:space="preserve"><value> (Deload)</value></data>
+  <data name="Session_SummaryAimFormat" xml:space="preserve"><value>{0}   Ziel {1} Wdh.</value></data>
+  <data name="Session_NewBestWeightFormat" xml:space="preserve"><value>Neue Bestleistung: {0} {1} {2}</value></data>
+  <data name="Session_NewBestRepsFormat" xml:space="preserve"><value>Neue Bestleistung: {0} {1} Wdh.</value></data>
+  <data name="Session_Done" xml:space="preserve"><value>Fertig</value></data>
+  <data name="Session_Discard" xml:space="preserve"><value>Session verwerfen</value></data>
+  <data name="Session_DiscardConfirm" xml:space="preserve"><value>Diese Session verwerfen? Eingetragene Sätze gehen verloren.</value></data>
+  <data name="Session_DiscardAction" xml:space="preserve"><value>Verwerfen</value></data>
+  <data name="Session_Delete" xml:space="preserve"><value>Session löschen</value></data>
+  <data name="Session_DeleteConfirm" xml:space="preserve"><value>Diese Session aus dem Verlauf löschen? Diagramme und Vorschläge berücksichtigen sie dann nicht mehr.</value></data>
+
+  <!-- Live consequence hint (arrow glyphs are appended in code) -->
+  <data name="Session_HintRepsPrefixFormat" xml:space="preserve"><value>{0} Wdh. → </value></data>
+  <data name="Session_HintNextTimeFormat" xml:space="preserve"><value>nächstes Mal {0} {1}</value></data>
+  <data name="Session_HintStaysFormat" xml:space="preserve"><value>{0} {1} bleibt</value></data>
+  <data name="Session_HintNextAimFormat" xml:space="preserve"><value>nächstes Mal Ziel {0}</value></data>
+  <data name="Session_HintAimAgainFormat" xml:space="preserve"><value>wieder Ziel {0}</value></data>
+  <data name="Session_HintDeloadFormat" xml:space="preserve"><value>Deload auf {0} {1}</value></data>
+
+  <!-- Progression explainer -->
+  <data name="Explainer_Title" xml:space="preserve"><value>So funktioniert die Progression</value></data>
+  <data name="Explainer_Keep" xml:space="preserve"><value>Wdh. im Zielbereich → das Gewicht bleibt.</value></data>
+  <data name="Explainer_Up" xml:space="preserve"><value>Über dem Bereich → nächstes Mal mehr Gewicht.</value></data>
+  <data name="Explainer_Down" xml:space="preserve"><value>Unter dem Bereich → nächstes Mal weniger Gewicht.</value></data>
+  <data name="Explainer_Override" xml:space="preserve"><value>Tippe auf das Pfeil-Symbol einer Übung, um den Vorschlag zu überschreiben.</value></data>
+  <data name="Explainer_GotIt" xml:space="preserve"><value>Alles klar</value></data>
+
+  <!-- Stats -->
+  <data name="Stats_Filter" xml:space="preserve"><value>Filter</value></data>
+  <data name="Stats_Range3M" xml:space="preserve"><value>3M</value></data>
+  <data name="Stats_Range1Y" xml:space="preserve"><value>1J</value></data>
+  <data name="Stats_RangeAll" xml:space="preserve"><value>Alle</value></data>
+  <data name="Stats_Reps" xml:space="preserve"><value>Wdh.</value></data>
+  <data name="Stats_NoDataYet" xml:space="preserve"><value>noch keine Daten</value></data>
+  <data name="Stats_EmptyFiltered" xml:space="preserve"><value>Keine Übungen ausgewählt — öffne den Filter.</value></data>
+
+  <!-- Settings -->
+  <data name="Settings_Units" xml:space="preserve"><value>Einheiten</value></data>
+  <data name="Settings_UnitKg" xml:space="preserve"><value>Kilogramm (kg)</value></data>
+  <data name="Settings_UnitLbs" xml:space="preserve"><value>Pfund (lbs)</value></data>
+  <data name="Settings_ProgressionDefaults" xml:space="preserve"><value>Progressions-Standards</value></data>
+  <data name="Settings_CountingSetQuestion" xml:space="preserve"><value>Welcher Satz entscheidet den Pfeil?</value></data>
+  <data name="Settings_FirstSet" xml:space="preserve"><value>Erster Satz</value></data>
+  <data name="Settings_LastSet" xml:space="preserve"><value>Letzter Satz</value></data>
+  <data name="Settings_BestSet" xml:space="preserve"><value>Bester Satz</value></data>
+  <data name="Settings_Data" xml:space="preserve"><value>Daten</value></data>
+  <data name="Settings_CreateBackup" xml:space="preserve"><value>Backup erstellen</value></data>
+  <data name="Settings_RestoreBackup" xml:space="preserve"><value>Backup wiederherstellen</value></data>
+  <data name="Settings_Help" xml:space="preserve"><value>Hilfe</value></data>
+  <data name="Settings_HowProgressionWorks" xml:space="preserve"><value>So funktioniert die Progression</value></data>
+  <data name="Settings_About" xml:space="preserve"><value>Über</value></data>
+  <data name="Settings_SendFeedback" xml:space="preserve"><value>Feedback senden</value></data>
+
+  <!-- Backup & restore -->
+  <data name="Backup_ShareTitle" xml:space="preserve"><value>StackUp-Backup</value></data>
+  <data name="Backup_PickerTitle" xml:space="preserve"><value>StackUp-Backup auswählen</value></data>
+  <data name="Backup_InvalidFile" xml:space="preserve"><value>Die gewählte Datei ist kein gültiges StackUp-Backup.</value></data>
+  <data name="Backup_NewerVersion" xml:space="preserve"><value>Dieses Backup stammt aus einer neueren StackUp-Version. Bitte aktualisiere zuerst die App.</value></data>
+  <data name="Backup_RestoreConfirm" xml:space="preserve"><value>Alle aktuellen Daten werden durch das Backup ersetzt. Das lässt sich nicht rückgängig machen. Fortfahren?</value></data>
+  <data name="Backup_RestoreAction" xml:space="preserve"><value>Wiederherstellen</value></data>
+  <data name="Backup_Restored" xml:space="preserve"><value>Backup wiederhergestellt.</value></data>
+  <data name="Backup_FailedTitle" xml:space="preserve"><value>Backup fehlgeschlagen</value></data>
+  <data name="Backup_RestoreFailedTitle" xml:space="preserve"><value>Wiederherstellen fehlgeschlagen</value></data>
+</root>

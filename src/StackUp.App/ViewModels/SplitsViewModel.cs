@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using StackUp.App.Resources.Strings;
 using StackUp.Core.Data;
 using StackUp.Core.Entities;
 
@@ -21,14 +22,15 @@ public partial class SplitsViewModel : ObservableObject
         foreach (var split in await _db.GetSplitsAsync())
         {
             var exercises = await _db.GetSplitExercisesAsync(split.Id);
-            Splits.Add(new SplitListItemViewModel(split, $"{exercises.Count} exercises"));
+            Splits.Add(new SplitListItemViewModel(split, string.Format(AppStrings.Splits_ExerciseCountFormat, exercises.Count)));
         }
     }
 
     [RelayCommand]
     private async Task AddSplitAsync()
     {
-        var name = await Shell.Current.DisplayPromptAsync("New split", "Name of the training day:", "Create", "Cancel");
+        var name = await Shell.Current.DisplayPromptAsync(AppStrings.Splits_NewSplitTitle,
+            AppStrings.Splits_NewSplitPrompt, AppStrings.Common_Create, AppStrings.Common_Cancel);
         if (string.IsNullOrWhiteSpace(name))
             return;
 

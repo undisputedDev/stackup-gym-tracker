@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using StackUp.App.Resources.Strings;
 using StackUp.Core.Data;
 using StackUp.Core.Entities;
 using StackUp.Core.Enums;
@@ -43,12 +44,13 @@ public partial class WorkoutHomeViewModel : ObservableObject
         {
             var split = await _db.GetSplitAsync(InProgressSession.SplitId);
             var started = InProgressSession.StartedAtUtc.ToLocalTime();
-            InProgressText = $"Resume {split?.Name ?? "session"} — started {started:HH:mm}";
+            InProgressText = string.Format(AppStrings.Home_ResumeFormat,
+                split?.Name ?? AppStrings.Home_SessionFallback, started.ToString("HH:mm"));
         }
 
         var (count, firstUtc) = await _db.GetCompletedSessionStatsAsync();
         MomentumText = count > 0 && firstUtc is { } first
-            ? $"Week {(DateTime.UtcNow.Date - first.Date).Days / 7 + 1} · {count} sessions"
+            ? string.Format(AppStrings.Home_MomentumFormat, (DateTime.UtcNow.Date - first.Date).Days / 7 + 1, count)
             : "";
 
         Splits.Clear();
@@ -78,13 +80,13 @@ public partial class WorkoutHomeViewModel : ObservableObject
     private static string LastDoneText(Session? last)
     {
         if (last is null)
-            return "Not done yet";
+            return AppStrings.Home_NotDoneYet;
         var days = (DateTime.UtcNow.Date - last.StartedAtUtc.Date).Days;
         return days switch
         {
-            0 => "Done today",
-            1 => "Last done yesterday",
-            _ => $"Last done {days} days ago",
+            0 => AppStrings.Home_DoneToday,
+            1 => AppStrings.Home_LastDoneYesterday,
+            _ => string.Format(AppStrings.Home_LastDoneDaysFormat, days),
         };
     }
 

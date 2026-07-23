@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using StackUp.App.Resources.Strings;
 using StackUp.Core.Data;
 using StackUp.Core.Entities;
 using StackUp.Core.Enums;
@@ -74,13 +75,13 @@ public partial class SessionViewModel : ObservableObject
             return;
 
         var split = await _db.GetSplitAsync(session.SplitId);
-        Title = split?.Name ?? "Workout";
+        Title = split?.Name ?? AppStrings.Session_WorkoutFallback;
 
         IsReadOnly = session.CompletedAtUtc is not null;
         HeaderText = session.CompletedAtUtc is { } done
-            ? $"{done.ToLocalTime():ddd, dd.MM.yyyy} · read-only"
-            : "In progress";
-        DeleteActionText = IsReadOnly ? "Delete session" : "Discard session";
+            ? string.Format(AppStrings.Session_ReadOnlyFormat, done.ToLocalTime().ToString("ddd, dd.MM.yyyy"))
+            : AppStrings.Session_InProgress;
+        DeleteActionText = IsReadOnly ? AppStrings.Session_Delete : AppStrings.Session_Discard;
 
         // Neighbours within this split's timeline (oldest -> newest, in-progress last).
         var timeline = await _db.GetSessionsForSplitAsync(session.SplitId);
@@ -144,11 +145,10 @@ public partial class SessionViewModel : ObservableObject
             return;
 
         var confirmed = IsReadOnly
-            ? await Shell.Current.DisplayAlertAsync("Delete session",
-                "Delete this session from your history? Charts and next-time suggestions will no longer include it.",
-                "Delete", "Cancel")
-            : await Shell.Current.DisplayAlertAsync("Discard session",
-                "Discard this session? Logged sets are lost.", "Discard", "Cancel");
+            ? await Shell.Current.DisplayAlertAsync(AppStrings.Session_Delete,
+                AppStrings.Session_DeleteConfirm, AppStrings.Common_Delete, AppStrings.Common_Cancel)
+            : await Shell.Current.DisplayAlertAsync(AppStrings.Session_Discard,
+                AppStrings.Session_DiscardConfirm, AppStrings.Session_DiscardAction, AppStrings.Common_Cancel);
         if (!confirmed)
             return;
 
@@ -238,14 +238,14 @@ public partial class SessionViewModel : ObservableObject
         SummaryStatsKeep = $"▬ {logged.Count(e => e.Entry.Mark == Mark.Keep)}";
         SummaryStatsDown = $"▼ {logged.Count(e => e.Entry.Mark == Mark.Down)}";
         SummaryDuration = session is not null
-            ? $"{(int)(now - session.StartedAtUtc).TotalMinutes} min"
+            ? string.Format(AppStrings.Session_DurationFormat, (int)(now - session.StartedAtUtc).TotalMinutes)
             : "";
 
         SummaryLines.Clear();
         foreach (var line in Entries.Select(e => e.BuildSummaryLine()).Where(l => l is not null))
             SummaryLines.Add(line!);
         if (SummaryLines.Count == 0 && logged.Count > 0)
-            SummaryLines.Add(new SummaryLine("▬", Color.FromArgb("#8A8F98"), "All weights stay — solid session."));
+            SummaryLines.Add(new SummaryLine("▬", Color.FromArgb("#8A8F98"), AppStrings.Session_AllKeep));
 
         // Personal records: one history query per logged exercise; the time filter
         // excludes the session just completed (it's already CompletedAtUtc != null).
@@ -345,13 +345,14 @@ public partial class SessionEntryViewModel : ObservableObject
         string text;
         if (IsWeightBased && next.WeightKg is { } w && Entry.WeightKg is { } current)
         {
-            text = $"{Name}   {UnitConverter.Format(current, _unit)} → {UnitConverter.Format(w, _unit)} {UnitLabel}";
+            text = string.Format(AppStrings.Session_SummaryWeightFormat,
+                Name, UnitConverter.Format(current, _unit), UnitConverter.Format(w, _unit), UnitLabel);
             if (next.IsDeload)
-                text += " (deload)";
+                text += AppStrings.Session_DeloadSuffix;
         }
         else if (!IsWeightBased && next.TargetReps is { } reps)
         {
-            text = $"{Name}   aim for {reps} reps";
+            text = string.Format(AppStrings.Session_SummaryAimFormat, Name, reps);
         }
         else
         {
@@ -370,13 +371,13 @@ public partial class SessionEntryViewModel : ObservableObject
                 return null;
             // No prior performed best -> no PR line (a first session shouldn't spam stars).
             return PersonalRecords.BestWeight(priorPoints) is { } best && w > best
-                ? $"New best: {Name} {UnitConverter.Format(w, _unit)} {UnitLabel}"
+                ? string.Format(AppStrings.Session_NewBestWeightFormat, Name, UnitConverter.Format(w, _unit), UnitLabel)
                 : null;
         }
 
         var current = Sets.Count > 0 ? Sets.Max(s => s.Reps) : 0;
         return current > 0 && PersonalRecords.BestSetReps(priorPoints) is { } bestReps && current > bestReps
-            ? $"New best: {Name} {current} reps"
+            ? string.Format(AppStrings.Session_NewBestRepsFormat, Name, current)
             : null;
     }
 
@@ -387,13 +388,13 @@ public partial class SessionEntryViewModel : ObservableObject
             // Historical entries show the range that applied back then, not today's settings.
             var min = Entry.RepMinSnapshot ?? _eff.RepMin;
             var max = Entry.RepMaxSnapshot ?? _eff.RepMax;
-            var parts = new List<string> { $"Target {min}–{max}" };
+            var parts = new List<string> { string.Format(AppStrings.Session_TargetFormat, min, max) };
             if (IsWeightBased && Entry.SuggestedWeightKg is { } sw)
-                parts.Add(Entry.IsDeloadSuggestion
-                    ? $"Deload {UnitConverter.Format(sw, _unit)} {UnitLabel}"
-                    : $"suggested {UnitConverter.Format(sw, _unit)} {UnitLabel}");
+                parts.Add(string.Format(
+                    Entry.IsDeloadSuggestion ? AppStrings.Session_DeloadFormat : AppStrings.Session_SuggestedFormat,
+                    UnitConverter.Format(sw, _unit), UnitLabel));
             else if (!IsWeightBased && Entry.SuggestedReps is { } sr)
-                parts.Add($"aim for {sr}");
+                parts.Add(string.Format(AppStrings.Session_AimForFormat, sr));
             if (LastTimeText() is { } lt)
                 parts.Add(lt);
             return string.Join(" · ", parts);
@@ -408,8 +409,8 @@ public partial class SessionEntryViewModel : ObservableObject
             return null;
         var reps = string.Join("/", RepsSerializer.Parse(last.RepsPerSet).Where(r => r > 0));
         return IsWeightBased && last.WeightKg is { } w
-            ? $"last {reps} @ {UnitConverter.Format(w, _unit)}"
-            : $"last {reps}";
+            ? string.Format(AppStrings.Session_LastFormat, reps, UnitConverter.Format(w, _unit))
+            : string.Format(AppStrings.Session_LastRepsFormat, reps);
     }
 
     public ObservableCollection<SetViewModel> Sets { get; } = [];
@@ -435,21 +436,22 @@ public partial class SessionEntryViewModel : ObservableObject
 
         var next = ComputeNextSuggestion();
         var counting = ProgressionEngine.CountingReps(RepsSerializer.Parse(Entry.RepsPerSet), _eff.Rule);
-        var prefix = counting is { } r ? $"{r} reps → " : ""; // manual-mark-only: no reps to cite
+        // Manual-mark-only: no reps to cite.
+        var prefix = counting is { } r ? string.Format(AppStrings.Session_HintRepsPrefixFormat, r) : "";
 
         ConsequenceText = next is { IsDeload: true, WeightKg: { } dw }
-            ? $"{prefix}deload to {UnitConverter.Format(dw, _unit)} {UnitLabel} ▼"
+            ? prefix + string.Format(AppStrings.Session_HintDeloadFormat, UnitConverter.Format(dw, _unit), UnitLabel) + " ▼"
             : (IsWeightBased, Entry.Mark) switch
         {
             (true, Mark.Up) when next.WeightKg is { } up =>
-                $"{prefix}next time {UnitConverter.Format(up, _unit)} {UnitLabel} ▲",
+                prefix + string.Format(AppStrings.Session_HintNextTimeFormat, UnitConverter.Format(up, _unit), UnitLabel) + " ▲",
             (true, Mark.Down) when next.WeightKg is { } down =>
-                $"{prefix}next time {UnitConverter.Format(down, _unit)} {UnitLabel} ▼",
+                prefix + string.Format(AppStrings.Session_HintNextTimeFormat, UnitConverter.Format(down, _unit), UnitLabel) + " ▼",
             (true, _) =>
-                $"{prefix}{UnitConverter.Format(Entry.WeightKg!.Value, _unit)} {UnitLabel} stays ▬",
-            (false, Mark.Up) => $"{prefix}next time aim for {next.TargetReps} ▲",
-            (false, Mark.Down) => $"{prefix}next time aim for {next.TargetReps} ▼",
-            (false, _) => $"{prefix}aim for {next.TargetReps} again ▬",
+                prefix + string.Format(AppStrings.Session_HintStaysFormat, UnitConverter.Format(Entry.WeightKg!.Value, _unit), UnitLabel) + " ▬",
+            (false, Mark.Up) => prefix + string.Format(AppStrings.Session_HintNextAimFormat, next.TargetReps) + " ▲",
+            (false, Mark.Down) => prefix + string.Format(AppStrings.Session_HintNextAimFormat, next.TargetReps) + " ▼",
+            (false, _) => prefix + string.Format(AppStrings.Session_HintAimAgainFormat, next.TargetReps) + " ▬",
         };
         IsConsequenceVisible = true;
     }

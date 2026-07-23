@@ -4,28 +4,29 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:views="clr-namespace:StackUp.App.Views"
+    xmlns:strings="clr-namespace:StackUp.App.Resources.Strings"
     Title="StackUp">
 
     <TabBar>
-        <Tab Title="Workout">
+        <Tab Title="{x:Static strings:AppStrings.Tab_Workout}">
             <Tab.Icon>
                 <FontImageSource FontFamily="MaterialIcons" Glyph="&#xEB43;" />
             </Tab.Icon>
             <ShellContent ContentTemplate="{DataTemplate views:WorkoutHomePage}" Route="workout" />
         </Tab>
-        <Tab Title="Splits">
+        <Tab Title="{x:Static strings:AppStrings.Tab_Splits}">
             <Tab.Icon>
                 <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE241;" />
             </Tab.Icon>
             <ShellContent ContentTemplate="{DataTemplate views:SplitsPage}" Route="splits" />
         </Tab>
-        <Tab Title="Stats">
+        <Tab Title="{x:Static strings:AppStrings.Tab_Stats}">
             <Tab.Icon>
                 <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE6E1;" />
             </Tab.Icon>
             <ShellContent ContentTemplate="{DataTemplate views:StatsPage}" Route="stats" />
         </Tab>
-        <Tab Title="Settings">
+        <Tab Title="{x:Static strings:AppStrings.Tab_Settings}">
             <Tab.Icon>
                 <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE8B8;" />
             </Tab.Icon>

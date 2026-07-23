@@ -15,4 +15,7 @@ public class Split
 
     /// <summary>Soft delete — completed sessions keep referencing archived splits.</summary>
     public bool IsArchived { get; set; }
+
+    /// <summary>Stable seed identity (null = user-created). Idempotency key for preset seeding across languages.</summary>
+    public string? PresetKey { get; set; }
 }

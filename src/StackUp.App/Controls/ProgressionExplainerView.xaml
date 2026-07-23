@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:strings="clr-namespace:StackUp.App.Resources.Strings"
              x:Class="StackUp.App.Controls.ProgressionExplainerView"
              x:Name="Root">
     <!-- Dimmed full-screen overlay; host pages toggle IsVisible and provide CloseCommand. -->
@@ -11,23 +12,23 @@
                 VerticalOptions="Center" HorizontalOptions="Fill"
                 Padding="24">
             <VerticalStackLayout Spacing="14">
-                <Label Text="How progression works"
+                <Label Text="{x:Static strings:AppStrings.Explainer_Title}"
                        FontFamily="OpenSansSemibold" FontSize="20"
                        HorizontalOptions="Center" />
 
                 <Grid ColumnDefinitions="28,*" RowDefinitions="Auto,Auto,Auto" RowSpacing="10" ColumnSpacing="6">
                     <Label Text="▬" TextColor="{StaticResource MarkKeep}" FontSize="16" />
-                    <Label Grid.Column="1" Text="Reps in the target range → the weight stays." FontSize="14" />
+                    <Label Grid.Column="1" Text="{x:Static strings:AppStrings.Explainer_Keep}" FontSize="14" />
                     <Label Grid.Row="1" Text="▲" TextColor="{StaticResource MarkUp}" FontSize="16" />
-                    <Label Grid.Row="1" Grid.Column="1" Text="Above the range → more weight next time." FontSize="14" />
+                    <Label Grid.Row="1" Grid.Column="1" Text="{x:Static strings:AppStrings.Explainer_Up}" FontSize="14" />
                     <Label Grid.Row="2" Text="▼" TextColor="{StaticResource MarkDown}" FontSize="16" />
-                    <Label Grid.Row="2" Grid.Column="1" Text="Below the range → less weight next time." FontSize="14" />
+                    <Label Grid.Row="2" Grid.Column="1" Text="{x:Static strings:AppStrings.Explainer_Down}" FontSize="14" />
                 </Grid>
 
-                <Label Text="Tap the arrow badge on a card to override the suggestion."
+                <Label Text="{x:Static strings:AppStrings.Explainer_Override}"
                        Style="{StaticResource Hint}" />
 
-                <Button Text="Got it"
+                <Button Text="{x:Static strings:AppStrings.Explainer_GotIt}"
                         FontFamily="OpenSansSemibold"
                         HeightRequest="50" CornerRadius="12"
                         Command="{Binding CloseCommand, Source={x:Reference Root}}" />

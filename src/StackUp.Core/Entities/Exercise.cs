@@ -35,4 +35,7 @@ public class Exercise
 
     /// <summary>Soft delete — history keeps referencing archived exercises.</summary>
     public bool IsArchived { get; set; }
+
+    /// <summary>Stable seed identity (null = user-created). Idempotency key for preset seeding across languages.</summary>
+    public string? PresetKey { get; set; }
 }

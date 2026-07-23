@@ -2,9 +2,10 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:StackUp.App.ViewModels"
+             xmlns:strings="clr-namespace:StackUp.App.Resources.Strings"
              x:Class="StackUp.App.Views.SplitsPage"
              x:DataType="vm:SplitsViewModel"
-             Title="Splits">
+             Title="{x:Static strings:AppStrings.Tab_Splits}">
 
     <Grid>
         <ScrollView>
@@ -30,14 +31,14 @@
                 </DataTemplate>
             </BindableLayout.ItemTemplate>
             <BindableLayout.EmptyView>
-                <Label Text="No splits yet. Tap Add to create your first training day."
+                <Label Text="{x:Static strings:AppStrings.Splits_EmptyList}"
                        Style="{StaticResource Hint}" HorizontalOptions="Center" Margin="0,32" />
             </BindableLayout.EmptyView>
             </VerticalStackLayout>
         </ScrollView>
 
         <Button Style="{StaticResource Fab}"
-                SemanticProperties.Description="Add split"
+                SemanticProperties.Description="{x:Static strings:AppStrings.Splits_AddSemantic}"
                 Command="{Binding AddSplitCommand}" />
     </Grid>
 </ContentPage>

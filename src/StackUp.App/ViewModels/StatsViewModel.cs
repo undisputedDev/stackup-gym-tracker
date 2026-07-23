@@ -5,6 +5,7 @@ using LiveChartsCore;
 using LiveChartsCore.Defaults;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
+using StackUp.App.Resources.Strings;
 using StackUp.Core.Data;
 using StackUp.Core.Entities;
 using StackUp.Core.Enums;
@@ -119,8 +120,8 @@ public partial class StatsViewModel : ObservableObject
             .ToList();
 
         var accent = new SKColor(0x2E, 0x6E, 0x62);
-        var unitLabel = isWeight ? UnitConverter.UnitLabel(_unit) : "reps";
-        var latest = points.Count > 0 ? $"{points[^1].Value:0.##} {unitLabel}" : "no data yet";
+        var unitLabel = isWeight ? UnitConverter.UnitLabel(_unit) : AppStrings.Stats_Reps;
+        var latest = points.Count > 0 ? $"{points[^1].Value:0.##} {unitLabel}" : AppStrings.Stats_NoDataYet;
         var (minStep, dateFormat) = GetAxisScale(points);
 
         return new ExerciseStatCardViewModel

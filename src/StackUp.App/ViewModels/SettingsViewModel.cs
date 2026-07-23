@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using StackUp.App.Resources.Strings;
 using StackUp.Core.Data;
 using StackUp.Core.Entities;
 using StackUp.Core.Enums;
@@ -19,6 +20,13 @@ public partial class SettingsViewModel : ObservableObject
         _db = db;
         RepMinText = RepMaxText = IncrementText = RepIncrementText = SetCountText = "";
     }
+
+    /// <summary>Unit picker items; index matches <see cref="WeightUnit"/>.</summary>
+    public string[] UnitOptions { get; } = [AppStrings.Settings_UnitKg, AppStrings.Settings_UnitLbs];
+
+    /// <summary>Counting-set picker items; index matches <see cref="CountingSetRule"/>.</summary>
+    public string[] CountingSetOptions { get; } =
+        [AppStrings.Settings_FirstSet, AppStrings.Settings_LastSet, AppStrings.Settings_BestSet];
 
     /// <summary>0 = kg, 1 = lbs.</summary>
     [ObservableProperty] public partial int UnitIndex { get; set; }
@@ -123,13 +131,13 @@ public partial class SettingsViewModel : ObservableObject
             await _db.CreateBackupAsync(path);
             await Share.Default.RequestAsync(new ShareFileRequest
             {
-                Title = "StackUp backup",
+                Title = AppStrings.Backup_ShareTitle,
                 File = new ShareFile(path),
             });
         }
         catch (Exception ex)
         {
-            await Shell.Current.DisplayAlertAsync("Backup failed", ex.Message, "OK");
+            await Shell.Current.DisplayAlertAsync(AppStrings.Backup_FailedTitle, ex.Message, AppStrings.Common_OK);
         }
     }
 
@@ -139,7 +147,7 @@ public partial class SettingsViewModel : ObservableObject
         try
         {
             // No file-type filter: .db3 has no reliable MIME type on Android; validation is the gate.
-            var picked = await FilePicker.Default.PickAsync(new PickOptions { PickerTitle = "Choose a StackUp backup" });
+            var picked = await FilePicker.Default.PickAsync(new PickOptions { PickerTitle = AppStrings.Backup_PickerTitle });
             if (picked is null)
                 return;
 
@@ -152,29 +160,29 @@ public partial class SettingsViewModel : ObservableObject
             switch (await AppDatabase.ValidateBackupFileAsync(temp))
             {
                 case BackupFileStatus.Invalid:
-                    await Shell.Current.DisplayAlertAsync("Restore backup",
-                        "The selected file is not a valid StackUp backup.", "OK");
+                    await Shell.Current.DisplayAlertAsync(AppStrings.Settings_RestoreBackup,
+                        AppStrings.Backup_InvalidFile, AppStrings.Common_OK);
                     return;
                 case BackupFileStatus.NewerAppVersion:
-                    await Shell.Current.DisplayAlertAsync("Restore backup",
-                        "This backup was created by a newer version of StackUp. Update the app first.", "OK");
+                    await Shell.Current.DisplayAlertAsync(AppStrings.Settings_RestoreBackup,
+                        AppStrings.Backup_NewerVersion, AppStrings.Common_OK);
                     return;
             }
 
-            var confirmed = await Shell.Current.DisplayAlertAsync("Restore backup",
-                "This replaces all current data with the backup. This cannot be undone. Continue?",
-                "Restore", "Cancel");
+            var confirmed = await Shell.Current.DisplayAlertAsync(AppStrings.Settings_RestoreBackup,
+                AppStrings.Backup_RestoreConfirm, AppStrings.Backup_RestoreAction, AppStrings.Common_Cancel);
             if (!confirmed)
                 return;
 
             await _db.RestoreFromFileAsync(temp);
             File.Delete(temp);
             await LoadAsync();
-            await Shell.Current.DisplayAlertAsync("Restore backup", "Backup restored.", "OK");
+            await Shell.Current.DisplayAlertAsync(AppStrings.Settings_RestoreBackup,
+                AppStrings.Backup_Restored, AppStrings.Common_OK);
         }
         catch (Exception ex)
         {
-            await Shell.Current.DisplayAlertAsync("Restore failed", ex.Message, "OK");
+            await Shell.Current.DisplayAlertAsync(AppStrings.Backup_RestoreFailedTitle, ex.Message, AppStrings.Common_OK);
         }
     }
 

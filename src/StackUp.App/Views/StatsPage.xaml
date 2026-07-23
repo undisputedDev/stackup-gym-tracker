@@ -4,23 +4,24 @@
              xmlns:vm="clr-namespace:StackUp.App.ViewModels"
              xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.Maui;assembly=LiveChartsCore.SkiaSharpView.Maui"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:strings="clr-namespace:StackUp.App.Resources.Strings"
              x:Class="StackUp.App.Views.StatsPage"
              x:DataType="vm:StatsViewModel"
-             Title="Stats">
+             Title="{x:Static strings:AppStrings.Tab_Stats}">
 
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Filter" Command="{Binding ToggleFilterCommand}" />
+        <ToolbarItem Text="{x:Static strings:AppStrings.Stats_Filter}" Command="{Binding ToggleFilterCommand}" />
     </ContentPage.ToolbarItems>
 
     <Grid RowDefinitions="Auto,Auto,*" Padding="16,8,16,0" RowSpacing="10">
 
         <!-- Range selection -->
         <HorizontalStackLayout Spacing="8" HorizontalOptions="Center">
-            <Button Text="3M" WidthRequest="72" HeightRequest="40" CornerRadius="10" Padding="0"
+            <Button Text="{x:Static strings:AppStrings.Stats_Range3M}" WidthRequest="72" HeightRequest="40" CornerRadius="10" Padding="0"
                     Command="{Binding SetRangeCommand}" CommandParameter="0" />
-            <Button Text="1Y" WidthRequest="72" HeightRequest="40" CornerRadius="10" Padding="0"
+            <Button Text="{x:Static strings:AppStrings.Stats_Range1Y}" WidthRequest="72" HeightRequest="40" CornerRadius="10" Padding="0"
                     Command="{Binding SetRangeCommand}" CommandParameter="1" />
-            <Button Text="All" WidthRequest="72" HeightRequest="40" CornerRadius="10" Padding="0"
+            <Button Text="{x:Static strings:AppStrings.Stats_RangeAll}" WidthRequest="72" HeightRequest="40" CornerRadius="10" Padding="0"
                     Command="{Binding SetRangeCommand}" CommandParameter="2" />
         </HorizontalStackLayout>
 
@@ -70,7 +71,7 @@
                     </DataTemplate>
                 </BindableLayout.ItemTemplate>
                 <BindableLayout.EmptyView>
-                    <Label Text="No exercises selected — open Filter to enable some."
+                    <Label Text="{x:Static strings:AppStrings.Stats_EmptyFiltered}"
                            Style="{StaticResource Hint}" HorizontalOptions="Center" Margin="0,32" />
                 </BindableLayout.EmptyView>
             </VerticalStackLayout>

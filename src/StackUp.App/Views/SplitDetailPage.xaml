@@ -4,18 +4,19 @@
              xmlns:vm="clr-namespace:StackUp.App.ViewModels"
              xmlns:entities="clr-namespace:StackUp.Core.Entities;assembly=StackUp.Core"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:strings="clr-namespace:StackUp.App.Resources.Strings"
              x:Class="StackUp.App.Views.SplitDetailPage"
              x:DataType="vm:SplitDetailViewModel"
              Title="{Binding Name}">
 
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Rename" Command="{Binding RenameCommand}" />
-        <ToolbarItem Text="Delete" Command="{Binding ArchiveSplitCommand}" Order="Secondary" />
+        <ToolbarItem Text="{x:Static strings:AppStrings.SplitDetail_Rename}" Command="{Binding RenameCommand}" />
+        <ToolbarItem Text="{x:Static strings:AppStrings.Common_Delete}" Command="{Binding ArchiveSplitCommand}" Order="Secondary" />
     </ContentPage.ToolbarItems>
 
     <Grid RowDefinitions="Auto,*" Padding="16" RowSpacing="10">
 
-        <Label Text="Exercises (in workout order)" Style="{StaticResource SectionTitle}" />
+        <Label Text="{x:Static strings:AppStrings.SplitDetail_ExercisesHeader}" Style="{StaticResource SectionTitle}" />
 
         <!-- Long-press (or mouse-drag) a row to reorder -->
         <CollectionView x:Name="ExercisesCollection"
@@ -62,12 +63,12 @@
                 </DataTemplate>
             </CollectionView.ItemTemplate>
             <CollectionView.Footer>
-                <Label Text="Hold and drag to reorder · tap a name to edit its settings."
+                <Label Text="{x:Static strings:AppStrings.SplitDetail_ReorderFooter}"
                        Style="{StaticResource Hint}" HorizontalTextAlignment="Center"
                        Margin="0,12,0,96" />
             </CollectionView.Footer>
             <CollectionView.EmptyView>
-                <Label Text="No exercises yet — add your first one below."
+                <Label Text="{x:Static strings:AppStrings.SplitDetail_EmptyList}"
                        Style="{StaticResource Hint}" HorizontalOptions="Center" Margin="0,24" />
             </CollectionView.EmptyView>
         </CollectionView>
@@ -75,7 +76,7 @@
         <Button Grid.RowSpan="2"
                 Style="{StaticResource Fab}"
                 Margin="0,0,4,4"
-                SemanticProperties.Description="Add exercise"
+                SemanticProperties.Description="{x:Static strings:AppStrings.SplitDetail_AddExercise}"
                 Command="{Binding AddExerciseCommand}" />
     </Grid>
 </ContentPage>

@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using StackUp.App.Resources.Strings;
 using StackUp.Core.Data;
 using StackUp.Core.Entities;
 using StackUp.Core.Enums;
@@ -22,7 +23,7 @@ public partial class ExerciseEditViewModel : ObservableObject
     public ExerciseEditViewModel(AppDatabase db)
     {
         _db = db;
-        PageTitle = "New exercise";
+        PageTitle = AppStrings.ExerciseEdit_NewTitle;
         Name = "";
         RepMinText = RepMaxText = IncrementText = RepIncrementText = "";
         RepMinPlaceholder = RepMaxPlaceholder = IncrementPlaceholder = RepIncrementPlaceholder = "";
@@ -32,6 +33,10 @@ public partial class ExerciseEditViewModel : ObservableObject
     }
 
     public ObservableCollection<IconChoiceViewModel> IconChoices { get; } = [];
+
+    /// <summary>Tracking-type picker items; index matches <see cref="TrackingType"/>.</summary>
+    public string[] TrackingOptions { get; } =
+        [AppStrings.ExerciseEdit_TrackingWeight, AppStrings.ExerciseEdit_TrackingReps];
 
     /// <summary>Marks the given key as selected in the picker (and remembers it for saving).</summary>
     public void SelectIcon(string key)
@@ -77,10 +82,10 @@ public partial class ExerciseEditViewModel : ObservableObject
     {
         await _db.InitializeAsync();
         var settings = await _db.GetSettingsAsync();
-        RepMinPlaceholder = $"Default: {settings.DefaultRepRangeMin}";
-        RepMaxPlaceholder = $"Default: {settings.DefaultRepRangeMax}";
-        IncrementPlaceholder = $"Default: {settings.DefaultWeightIncrementKg:0.##} kg";
-        RepIncrementPlaceholder = $"Default: {settings.DefaultRepIncrement}";
+        RepMinPlaceholder = string.Format(AppStrings.ExerciseEdit_DefaultFormat, settings.DefaultRepRangeMin);
+        RepMaxPlaceholder = string.Format(AppStrings.ExerciseEdit_DefaultFormat, settings.DefaultRepRangeMax);
+        IncrementPlaceholder = string.Format(AppStrings.ExerciseEdit_DefaultFormat, $"{settings.DefaultWeightIncrementKg:0.##} kg");
+        RepIncrementPlaceholder = string.Format(AppStrings.ExerciseEdit_DefaultFormat, settings.DefaultRepIncrement);
 
         if (ExerciseId > 0)
         {
@@ -89,7 +94,7 @@ public partial class ExerciseEditViewModel : ObservableObject
                 return;
             _exercise = existing;
             IsExisting = true;
-            PageTitle = "Edit exercise";
+            PageTitle = AppStrings.ExerciseEdit_EditTitle;
             Name = existing.Name;
             TrackingTypeIndex = (int)existing.TrackingType;
             RepMinText = existing.RepRangeMinOverride?.ToString() ?? "";
@@ -105,7 +110,8 @@ public partial class ExerciseEditViewModel : ObservableObject
     {
         if (string.IsNullOrWhiteSpace(Name))
         {
-            await Shell.Current.DisplayAlertAsync("Missing name", "Please enter an exercise name.", "OK");
+            await Shell.Current.DisplayAlertAsync(AppStrings.ExerciseEdit_MissingNameTitle,
+                AppStrings.ExerciseEdit_MissingNameText, AppStrings.Common_OK);
             return;
         }
 
@@ -132,8 +138,8 @@ public partial class ExerciseEditViewModel : ObservableObject
     [RelayCommand]
     private async Task ArchiveAsync()
     {
-        var confirmed = await Shell.Current.DisplayAlertAsync("Delete exercise",
-            $"Remove \"{Name}\" from all splits? Your history is kept.", "Delete", "Cancel");
+        var confirmed = await Shell.Current.DisplayAlertAsync(AppStrings.ExerciseEdit_DeleteTitle,
+            string.Format(AppStrings.ExerciseEdit_DeleteConfirmFormat, Name), AppStrings.Common_Delete, AppStrings.Common_Cancel);
         if (!confirmed)
             return;
         await _db.ArchiveExerciseAsync(_exercise.Id);
