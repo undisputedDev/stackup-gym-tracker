@@ -74,14 +74,29 @@ reach logcat here.
    mojibakes UTF-8 without BOM). Use proper edit tooling.
 8. LiveCharts pinned to `2.1.0-dev-798` — the only line supporting .NET 10 MAUI;
    don't auto-update.
+9. On `Picker`, the `ItemsSource` attribute must precede `SelectedIndex` in XAML, or
+   the selection silently resets to empty when the binding applies.
+10. Don't create a `StackUp.App.Views.Controls` namespace — pages reference
+    `Controls.DragLift` relatively, and the closer namespace shadows
+    `StackUp.App.Controls` (Android-only compile break). Shared controls live in
+    `Controls/` with namespace `StackUp.App.Controls`.
+11. MSBuild resx designer codegen (`StronglyTypedFileName`) never reaches the WinUI
+    XAML precompile pass — the typed accessor `AppStrings.cs` is checked in by hand
+    instead; keep it in sync with the resx keys.
 
 ## Conventions & architecture rules
 
 - **Migrations**: `PRAGMA user_version` + ordered lambdas in `AppDatabase.Migrations`
-  (currently v4). New columns always via `AddColumnIfMissingAsync` (fresh installs
+  (currently v7). New columns always via `AddColumnIfMissingAsync` (fresh installs
   create the full schema in v1, so later migrations must tolerate existing columns).
-  Preset seeding (`SeedData.EnsurePresetsAsync`) is idempotent by name and must never
-  resurrect user-deleted (archived) rows.
+  Preset seeding (`SeedData.EnsurePresetsAsync`) is idempotent by stable `PresetKey`
+  (plus EN/localized name for pre-key rows) and must never resurrect user-deleted
+  (archived) rows.
+- **Localization**: all UI text lives in `Resources/Strings/AppStrings.resx` (+`.de`);
+  new strings need the EN + DE resx entries AND a property in the hand-written
+  `AppStrings.cs`. XAML uses `{x:Static strings:AppStrings.Key}`, VMs `string.Format`.
+  Preset names localize at seed time via Core's `PresetStrings(.de).resx`; once
+  seeded, names are user data and never rewritten.
 - **History integrity**: `SessionEntry` snapshots exercise name + effective rep range
   at session start; renames/settings changes must never rewrite history.
 - **Storage is always kg**; lbs is display-layer only (`UnitConverter`). Parse user
@@ -110,5 +125,7 @@ reach logcat here.
   (`ReviewMilestone`); no custom ask-me-later UI (store policy).
 - Feedback address in `SettingsViewModel.FeedbackAddress` is a placeholder — owner
   will create a dedicated mailbox before release (TODO comment marks the spot).
-- Next work: [docs/v1.1-plan.md](docs/v1.1-plan.md) — Phase 1 (session-screen clarity:
-  rep-chip label, live consequence text, one-time explainer) is first.
+- v1.1 is **implemented** (all 5 phases of [docs/v1.1-plan.md](docs/v1.1-plan.md),
+  one commit per phase): session-screen clarity, backup/restore + delete/discard,
+  deload + PR recognition + last-time hint, design polish, German localization.
+  Store-listing texts: [docs/store-listing.md](docs/store-listing.md).
