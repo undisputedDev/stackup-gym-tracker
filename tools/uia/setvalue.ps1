@@ -6,7 +6,7 @@ param(
 Add-Type -AssemblyName UIAutomationClient
 Add-Type -AssemblyName UIAutomationTypes
 
-$proc = Get-Process SimpleGymDiary.App -ErrorAction Stop | Where-Object { $_.MainWindowHandle -ne 0 } | Select-Object -First 1
+$proc = Get-Process StackUp.App -ErrorAction Stop | Where-Object { $_.MainWindowHandle -ne 0 } | Select-Object -First 1
 $root = [System.Windows.Automation.AutomationElement]::FromHandle($proc.MainWindowHandle)
 
 $cond = New-Object System.Windows.Automation.PropertyCondition(

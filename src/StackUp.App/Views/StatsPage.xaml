@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:StackUp.App.ViewModels"
+             xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.Maui;assembly=LiveChartsCore.SkiaSharpView.Maui"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="StackUp.App.Views.StatsPage"
+             x:DataType="vm:StatsViewModel"
+             Title="Stats">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Filter" Command="{Binding ToggleFilterCommand}" />
+    </ContentPage.ToolbarItems>
+
+    <Grid RowDefinitions="Auto,Auto,*" Padding="16,8,16,0" RowSpacing="10">
+
+        <!-- Range selection -->
+        <HorizontalStackLayout Spacing="8" HorizontalOptions="Center">
+            <Button Text="3M" WidthRequest="72" HeightRequest="40" CornerRadius="10" Padding="0"
+                    Command="{Binding SetRangeCommand}" CommandParameter="0" />
+            <Button Text="1Y" WidthRequest="72" HeightRequest="40" CornerRadius="10" Padding="0"
+                    Command="{Binding SetRangeCommand}" CommandParameter="1" />
+            <Button Text="All" WidthRequest="72" HeightRequest="40" CornerRadius="10" Padding="0"
+                    Command="{Binding SetRangeCommand}" CommandParameter="2" />
+        </HorizontalStackLayout>
+
+        <!-- Filter panel: choose which exercises are charted (all on by default) -->
+        <Border Grid.Row="1" Style="{StaticResource Card}" IsVisible="{Binding IsFilterOpen}">
+            <VerticalStackLayout Spacing="4" BindableLayout.ItemsSource="{Binding FilterItems}">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="vm:StatFilterItemViewModel">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Text="{Binding Name}" FontSize="15" VerticalOptions="Center" />
+                            <Switch Grid.Column="1" IsToggled="{Binding IsShown}"
+                                    OnColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                        </Grid>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </VerticalStackLayout>
+        </Border>
+
+        <!-- One chart card per visible exercise -->
+        <ScrollView Grid.Row="2">
+            <VerticalStackLayout Spacing="12" Padding="0,0,0,16"
+                                 BindableLayout.ItemsSource="{Binding Cards}">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="vm:ExerciseStatCardViewModel">
+                        <Border Style="{StaticResource Card}" Padding="12">
+                            <VerticalStackLayout Spacing="6">
+                                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                                    <Image Source="{Binding IconSource}"
+                                           WidthRequest="20" HeightRequest="20"
+                                           VerticalOptions="Center">
+                                        <Image.Behaviors>
+                                            <toolkit:IconTintColorBehavior TintColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                                        </Image.Behaviors>
+                                    </Image>
+                                    <Label Grid.Column="1" Text="{Binding Title}" FontFamily="OpenSansSemibold" FontSize="16"
+                                           VerticalOptions="Center" />
+                                    <Label Grid.Column="2" Text="{Binding Subtitle}" Style="{StaticResource Hint}"
+                                           VerticalOptions="Center" />
+                                </Grid>
+                                <lvc:CartesianChart Series="{Binding Series}"
+                                                    XAxes="{Binding XAxes}"
+                                                    YAxes="{Binding YAxes}"
+                                                    HeightRequest="200"
+                                                    IsVisible="{Binding HasData}" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+                <BindableLayout.EmptyView>
+                    <Label Text="No exercises selected — open Filter to enable some."
+                           Style="{StaticResource Hint}" HorizontalOptions="Center" Margin="0,32" />
+                </BindableLayout.EmptyView>
+            </VerticalStackLayout>
+        </ScrollView>
+
+    </Grid>
+</ContentPage>

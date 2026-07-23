@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/StackUp.App/StackUp.App.csproj" />
+    <Project Path="src/StackUp.Core/StackUp.Core.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/StackUp.Tests/StackUp.Tests.csproj" />
+  </Folder>
+  <Folder Name="/tools/">
+    <Project Path="tools/StackUp.DemoSeeder/StackUp.DemoSeeder.csproj" />
+  </Folder>
+</Solution>

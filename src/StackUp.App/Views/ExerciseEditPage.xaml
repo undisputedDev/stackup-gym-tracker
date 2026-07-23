@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:StackUp.App.ViewModels"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="StackUp.App.Views.ExerciseEditPage"
+             x:DataType="vm:ExerciseEditViewModel"
+             Title="{Binding PageTitle}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="12">
+
+            <Border Style="{StaticResource Card}">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Name" Style="{StaticResource SectionTitle}" Margin="0" />
+                    <Entry Text="{Binding Name}" Placeholder="e.g. Lat Pulldown" FontSize="16" />
+
+                    <Label Text="Tracking" Style="{StaticResource SectionTitle}" Margin="0,8,0,0" />
+                    <Picker SelectedIndex="{Binding TrackingTypeIndex}" FontSize="16">
+                        <Picker.ItemsSource>
+                            <x:Array Type="{x:Type x:String}">
+                                <x:String>Weight (kg on a machine/bar)</x:String>
+                                <x:String>Reps (bodyweight, e.g. pull-ups)</x:String>
+                            </x:Array>
+                        </Picker.ItemsSource>
+                    </Picker>
+
+                    <Label Text="Icon" Style="{StaticResource SectionTitle}" Margin="0,8,0,0" />
+                    <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+                    <HorizontalStackLayout Spacing="8" BindableLayout.ItemsSource="{Binding IconChoices}">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="vm:IconChoiceViewModel">
+                                <Border StrokeShape="RoundRectangle 10"
+                                        StrokeThickness="2"
+                                        Padding="7"
+                                        Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}">
+                                    <Border.Triggers>
+                                        <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
+                                            <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                                        </DataTrigger>
+                                    </Border.Triggers>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding SelectCommand}" />
+                                    </Border.GestureRecognizers>
+                                    <Image Source="{Binding Source}" WidthRequest="20" HeightRequest="20">
+                                        <Image.Behaviors>
+                                            <toolkit:IconTintColorBehavior TintColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                                        </Image.Behaviors>
+                                    </Image>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </HorizontalStackLayout>
+                    </ScrollView>
+                </VerticalStackLayout>
+            </Border>
+
+            <Label Text="Overrides — leave empty to use the global defaults"
+                   Style="{StaticResource SectionTitle}" />
+
+            <Border Style="{StaticResource Card}">
+                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="12" RowSpacing="4">
+                    <Label Text="Rep range min" Style="{StaticResource Hint}" />
+                    <Entry Grid.Row="1" Text="{Binding RepMinText}" Placeholder="{Binding RepMinPlaceholder}" Keyboard="Numeric" />
+                    <Label Grid.Column="1" Text="Rep range max" Style="{StaticResource Hint}" />
+                    <Entry Grid.Row="1" Grid.Column="1" Text="{Binding RepMaxText}" Placeholder="{Binding RepMaxPlaceholder}" Keyboard="Numeric" />
+
+                    <Label Grid.Row="2" Text="Weight increment (kg)" Style="{StaticResource Hint}" Margin="0,8,0,0" />
+                    <Entry Grid.Row="3" Text="{Binding IncrementText}" Placeholder="{Binding IncrementPlaceholder}" Keyboard="Numeric" />
+                    <Label Grid.Row="2" Grid.Column="1" Text="Rep increment" Style="{StaticResource Hint}" Margin="0,8,0,0" />
+                    <Entry Grid.Row="3" Grid.Column="1" Text="{Binding RepIncrementText}" Placeholder="{Binding RepIncrementPlaceholder}" Keyboard="Numeric" />
+                </Grid>
+            </Border>
+
+            <Button Text="Save"
+                    FontFamily="OpenSansSemibold"
+                    HeightRequest="52" CornerRadius="12"
+                    Command="{Binding SaveCommand}" />
+
+            <Button Text="Delete exercise"
+                    IsVisible="{Binding IsExisting}"
+                    BackgroundColor="Transparent"
+                    TextColor="{StaticResource MarkDown}"
+                    Command="{Binding ArchiveCommand}" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

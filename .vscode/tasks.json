@@ -6,7 +6,7 @@
             "type": "shell",
             // -t:Run breaks on paths with spaces (MSB3073/9009: unquoted RunCommand),
             // so build and launch the exe explicitly.
-            "command": "dotnet build src/SimpleGymDiary.App -f net10.0-windows10.0.19041.0; if ($LASTEXITCODE -eq 0) { Start-Process '${workspaceFolder}\\src\\SimpleGymDiary.App\\bin\\Debug\\net10.0-windows10.0.19041.0\\win-x64\\SimpleGymDiary.App.exe' }",
+            "command": "dotnet build src/StackUp.App -f net10.0-windows10.0.19041.0; if ($LASTEXITCODE -eq 0) { Start-Process '${workspaceFolder}\\src\\StackUp.App\\bin\\Debug\\net10.0-windows10.0.19041.0\\win-x64\\StackUp.App.exe' }",
             "group": { "kind": "build", "isDefault": true },
             "problemMatcher": "$msCompile"
         },
@@ -16,7 +16,7 @@
             "command": "dotnet",
             "args": [
                 "build",
-                "src/SimpleGymDiary.App",
+                "src/StackUp.App",
                 "-f", "net10.0-android",
                 "-t:Run"
             ],
@@ -26,7 +26,7 @@
             "label": "Run tests",
             "type": "shell",
             "command": "dotnet",
-            "args": ["test", "tests/SimpleGymDiary.Tests"],
+            "args": ["test", "tests/StackUp.Tests"],
             "group": "test",
             "problemMatcher": "$msCompile"
         }

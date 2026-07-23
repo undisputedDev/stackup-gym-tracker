@@ -1,4 +1,4 @@
-# StackUp — Simple Gym Diary
+# StackUp — Simple Gym Tracker
 
 A minimal, no-nonsense workout tracker for Android and iOS (.NET MAUI). The name nods
 to the machine weight stack you pin — and to stacking up more of it over time. Replaces the
@@ -32,18 +32,18 @@ killed mid-session — sessions are resumable).
 
 | Project | Purpose |
 |---|---|
-| `src/SimpleGymDiary.Core` | Entities, progression engine, SQLite data layer, CSV export — no MAUI dependency |
-| `src/SimpleGymDiary.App` | .NET MAUI app (Android, iOS, Windows dev-head), MVVM via CommunityToolkit |
-| `tests/SimpleGymDiary.Tests` | xUnit tests for the progression engine, exporter, and database |
+| `src/StackUp.Core` | Entities, progression engine, SQLite data layer, CSV export — no MAUI dependency |
+| `src/StackUp.App` | .NET MAUI app (Android, iOS, Windows dev-head), MVVM via CommunityToolkit |
+| `tests/StackUp.Tests` | xUnit tests for the progression engine, exporter, and database |
 
 ## Building
 
 Requires .NET 10 SDK with the `android`/`ios` MAUI workloads (installed via Visual Studio).
 
 ```powershell
-dotnet test tests/SimpleGymDiary.Tests          # unit + integration tests
-dotnet build src/SimpleGymDiary.App -f net10.0-android
-dotnet build src/SimpleGymDiary.App -f net10.0-windows10.0.19041.0   # desktop dev-head
+dotnet test tests/StackUp.Tests          # unit + integration tests
+dotnet build src/StackUp.App -f net10.0-android
+dotnet build src/StackUp.App -f net10.0-windows10.0.19041.0   # desktop dev-head
 ```
 
 iOS builds require a paired Mac and an Apple developer account.

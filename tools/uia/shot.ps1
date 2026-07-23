@@ -12,7 +12,7 @@ public class Win32P {
 }
 "@
 
-$proc = Get-Process SimpleGymDiary.App -ErrorAction Stop | Where-Object { $_.MainWindowHandle -ne 0 } | Select-Object -First 1
+$proc = Get-Process StackUp.App -ErrorAction Stop | Where-Object { $_.MainWindowHandle -ne 0 } | Select-Object -First 1
 $rect = New-Object Win32P+RECT
 [Win32P]::GetWindowRect($proc.MainWindowHandle, [ref]$rect) | Out-Null
 $scale = 1.25 # display DPI scaling; PrintWindow renders scaled content

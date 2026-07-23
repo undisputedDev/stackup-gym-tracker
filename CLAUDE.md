@@ -1,8 +1,10 @@
-# StackUp (Simple Gym Diary) — project notes for Claude
+# StackUp — project notes for Claude
 
-App brand: **StackUp**; store listing title "StackUp – Simple Gym Diary";
-ApplicationId `com.stackupgym.app` (permanent once uploaded to Play). Code/solution
-names stay `SimpleGymDiary.*` — brand and code names are deliberately decoupled.
+App brand: **StackUp**; store listing title "StackUp – Simple Gym Tracker"
+(formerly "Simple Gym Diary" — owner decided "tracker" fits better and is the
+stronger search keyword). ApplicationId `com.stackupgym.app` (permanent once
+uploaded to Play). Solution/projects/namespaces are `StackUp.*` (fully renamed
+pre-remote); the root folder may still be named "Simple Gym Diary" on disk.
 
 Workout tracker (.NET MAUI, net10.0) whose key feature is auto-progression: reps vs. a
 target range produce an up/down/keep marking per exercise; the next session auto-suggests
@@ -11,28 +13,28 @@ the adjusted weight. See [README.md](README.md) for the product overview and
 
 ## Solution layout
 
-- `src/SimpleGymDiary.Core` — entities, `Progression/ProgressionEngine` (the core logic),
+- `src/StackUp.Core` — entities, `Progression/ProgressionEngine` (the core logic),
   `Data/AppDatabase` (sqlite-net, migrations), `Data/SeedData` (preset library),
   `Review/ReviewMilestone`. No MAUI references; everything here is unit-tested.
-- `src/SimpleGymDiary.App` — MAUI app (MVVM, CommunityToolkit). Pages in `Views/`,
+- `src/StackUp.App` — MAUI app (MVVM, CommunityToolkit). Pages in `Views/`,
   VMs in `ViewModels/`, `Platforms/Android/DragLift.cs` (native reorder feedback).
-- `tests/SimpleGymDiary.Tests` — xUnit; DB tests run against temp-file SQLite.
-- `tools/SimpleGymDiary.DemoSeeder` — recreates the Windows-head DB with 3 months of
+- `tests/StackUp.Tests` — xUnit; DB tests run against temp-file SQLite.
+- `tools/StackUp.DemoSeeder` — recreates the Windows-head DB with 3 months of
   demo history (deterministic, deletes the DB first).
 - `tools/uia/` — PowerShell UIA drivers for the Windows head (see Verification).
 
 ## Commands
 
 ```powershell
-dotnet test tests/SimpleGymDiary.Tests                                  # 51+ tests
-dotnet build src/SimpleGymDiary.App -f net10.0-windows10.0.19041.0     # Windows head
-dotnet build src/SimpleGymDiary.App -f net10.0-android -t:Run          # deploy to emulator
+dotnet test tests/StackUp.Tests                                  # 51+ tests
+dotnet build src/StackUp.App -f net10.0-windows10.0.19041.0     # Windows head
+dotnet build src/StackUp.App -f net10.0-android -t:Run          # deploy to emulator
 & "$env:LOCALAPPDATA\Android\Sdk\emulator\emulator.exe" -avd fmc_pixel # boot emulator first!
-dotnet run --project tools/SimpleGymDiary.DemoSeeder                   # reseed demo data
+dotnet run --project tools/StackUp.DemoSeeder                   # reseed demo data
 ```
 
 - `-t:Run` for Windows breaks (MSB3073/9009: unquoted path with spaces) — build, then
-  launch `...\bin\Debug\net10.0-windows10.0.19041.0\win-x64\SimpleGymDiary.App.exe`.
+  launch `...\bin\Debug\net10.0-windows10.0.19041.0\win-x64\StackUp.App.exe`.
 - Full-solution warnings only appear on `--no-incremental` rebuilds.
 - iOS never built here (needs a Mac); Android-first.
 
