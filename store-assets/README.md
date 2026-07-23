@@ -35,10 +35,18 @@ conversion). The `raw/` set is the fallback if you prefer the clean look. Each i
 | 5 | Finish summary ("next time" weights) | Finish – next session plan included | Abschließen – Plan fürs nächste Mal |
 | 6 | (EN only, bonus) "How progression works" explainer | — | — |
 
-## Still to create (see the release guide, Step 5)
+## Listing graphics (done)
 
-- **App icon** — 512×512 PNG (export from `src/StackUp.App/Resources/AppIcon/appicon.svg`).
-- **Feature graphic** — 1024×500 PNG (teal background, "StackUp" + tagline + ▲▬▼ motif).
+In `graphics/`:
+
+- **`icon_512.png`** — 512×512 app icon. Reproduces the launcher icon (white dumbbell +
+  up-arrow on teal `#2E6E62`) from `src/StackUp.App/Resources/AppIcon/`.
+- **`feature_1024x500.png`** — feature graphic, 1024×500, **24-bit (no alpha)** as Play
+  requires. Teal gradient, "StackUp" wordmark + tagline, the ▲▬▼ up/keep/down marks, and
+  the dumbbell glyph.
+
+Regenerate with `store-assets/tools/graphics.ps1` (GDI+; redraws both from the palette and
+the SVG dumbbell coordinates — edit colors/text at the top).
 
 ## Regenerating the screenshots
 
