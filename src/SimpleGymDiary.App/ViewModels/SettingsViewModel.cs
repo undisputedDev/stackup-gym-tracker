@@ -109,7 +109,7 @@ public partial class SettingsViewModel : ObservableObject
             _ = _db.SaveSettingsAsync(_settings);
     }
 
-    private const string FeedbackAddress = "apapenfuss.mosaic@gmail.com";
+    private const string FeedbackAddress = "undisputed140188+feedback@gmail.com";
 
     public string VersionText => $"Simple Gym Diary {AppInfo.Current.VersionString}";
 
