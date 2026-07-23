@@ -23,11 +23,11 @@ $caps["en_2_session"] = "Your next weight, suggested automatically"
 $caps["en_3_stats"]   = "Watch every lift trend upward"
 $caps["en_4_splits"]  = "Ready-made splits, fully customizable"
 $caps["en_5_finish"]  = "Finish $dash next session plan included"
-$caps["de_1_home"]    = "Training w${aLow}hlen und loslegen"
-$caps["de_2_session"] = "Dein n${aLow}chstes Gewicht $dash automatisch vorgeschlagen"
+$caps["de_1_home"]    = "Trainingssplit ausw${aLow}hlen und loslegen"
+$caps["de_2_session"] = "Automatische Erkennung, ob du das Gewicht in der n${aLow}chsten Session steigern solltest"
 $caps["de_3_stats"]   = "Dein Fortschritt, ${uUp}bung f${uLow}r ${uUp}bung"
-$caps["de_4_splits"]  = "Fertige Splits, voll anpassbar"
-$caps["de_5_finish"]  = "Abschlie${szlig}en $dash Plan f${uLow}rs n${aLow}chste Mal"
+$caps["de_4_splits"]  = "Vorgefertigte Splits. Passe sie an oder erstelle deine eigenen"
+$caps["de_5_finish"]  = "Ergebnis einer Session. Gewichte steigern oder senken f${uLow}r optimale Gains"
 
 foreach ($key in $caps.Keys) {
   $src = "$shots\$key.png"
@@ -41,13 +41,22 @@ foreach ($key in $caps.Keys) {
   $brushTeal = New-Object System.Drawing.SolidBrush $teal
   $g.FillRectangle($brushTeal, 0, 0, $w, $bandH)
   $g.DrawImage($img, 0, $bandH, $w, $h)
-  $font = New-Object System.Drawing.Font("Segoe UI Semibold", 46, [System.Drawing.FontStyle]::Bold, [System.Drawing.GraphicsUnit]::Pixel)
   $sf = New-Object System.Drawing.StringFormat
   $sf.Alignment = [System.Drawing.StringAlignment]::Center
   $sf.LineAlignment = [System.Drawing.StringAlignment]::Center
   $brushWhite = New-Object System.Drawing.SolidBrush $white
   $pad = 70
-  $rect = New-Object System.Drawing.RectangleF ($pad, 0, ($w - 2*$pad), $bandH)
+  $rect = New-Object System.Drawing.RectangleF ($pad, 30, ($w - 2*$pad), ($bandH - 60))
+  $layoutSize = New-Object System.Drawing.SizeF (($w - 2*$pad), 100000)
+  # Auto-fit: largest font (46 down to 30 px) whose wrapped text fits the band height.
+  $font = $null
+  foreach ($sz in 46,44,42,40,38,36,34,32,30) {
+    $f = New-Object System.Drawing.Font("Segoe UI Semibold", $sz, [System.Drawing.FontStyle]::Bold, [System.Drawing.GraphicsUnit]::Pixel)
+    $measured = $g.MeasureString($caps[$key], $f, $layoutSize, $sf)
+    if ($measured.Height -le ($bandH - 60)) { $font = $f; break }
+    $f.Dispose()
+  }
+  if ($null -eq $font) { $font = New-Object System.Drawing.Font("Segoe UI Semibold", 30, [System.Drawing.FontStyle]::Bold, [System.Drawing.GraphicsUnit]::Pixel) }
   $g.DrawString($caps[$key], $font, $brushWhite, $rect, $sf)
   $g.Dispose()
   $lang = $key.Substring(0,2)

@@ -28,12 +28,16 @@ conversion). The `raw/` set is the fallback if you prefer the clean look. Each i
 
 | # | Screen | EN caption | DE caption |
 |---|--------|-----------|-----------|
-| 1 | Workout home (splits + up/keep/down summary) | Pick a workout and start | Training wählen und loslegen |
-| 2 | Session in progress (▲ up + "next time" hint) | Your next weight, suggested automatically | Dein nächstes Gewicht – automatisch vorgeschlagen |
+| 1 | Workout home (splits + up/keep/down summary) | Pick a workout and start | Trainingssplit auswählen und loslegen |
+| 2 | Session in progress (▲ up + "next time" hint) | Your next weight, suggested automatically | Automatische Erkennung, ob du das Gewicht in der nächsten Session steigern solltest |
 | 3 | Stats (progression charts) | Watch every lift trend upward | Dein Fortschritt, Übung für Übung |
-| 4 | Splits library | Ready-made splits, fully customizable | Fertige Splits, voll anpassbar |
-| 5 | Finish summary ("next time" weights) | Finish – next session plan included | Abschließen – Plan fürs nächste Mal |
+| 4 | Splits library | Ready-made splits, fully customizable | Vorgefertigte Splits. Passe sie an oder erstelle deine eigenen |
+| 5 | Finish summary (~50 min, ▲▬▼ mix, per-exercise "next time" weights) | Finish – next session plan included | Ergebnis einer Session. Gewichte steigern oder senken für optimale Gains |
 | 6 | (EN only, bonus) "How progression works" explainer | — | — |
+
+The finish-summary screenshot (5) is captured from a demo **in-progress** session seeded ~50
+min in the past with a deliberate up/keep/down mix — enable it in the seeder with
+`STACKUP_SEED_INPROGRESS=1` (see `tools/StackUp.DemoSeeder`).
 
 ## Listing graphics (done)
 

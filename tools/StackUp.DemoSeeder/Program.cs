@@ -68,11 +68,56 @@ for (var w = weeks - 1; w >= 0; w--)
     await SimulateSessionAsync(lower.Id, lastLower.AddDays(-7 * w));
 }
 
+// Optionally leave one Upper Body session in progress (~48 min ago) with reps already
+// entered on every exercise, deliberately producing a mix of ▲ up / ▬ keep / ▼ down —
+// so the finish-summary screenshot shows a realistic duration and a result per exercise.
+// Enable with STACKUP_SEED_INPROGRESS=1.
+if (Environment.GetEnvironmentVariable("STACKUP_SEED_INPROGRESS") == "1")
+    await AddInProgressSessionAsync(upper.Id);
+
 var sessionCount = (await db.GetSessionsForSplitAsync(upper.Id)).Count
                  + (await db.GetSessionsForSplitAsync(lower.Id)).Count;
 Console.WriteLine($"Done: {sessionCount} sessions seeded.");
 await db.CloseAsync();
 return;
+
+// Marks chosen per exercise so the summary shows all three outcomes:
+//   lat_pulldown  -> Up   (beat the range)
+//   rowing        -> Up   (beat the range)
+//   bench_press   -> Keep (inside the range)
+//   butterfly     -> Keep (inside the range)
+//   lateral_raise -> Down (fell short)
+async Task AddInProgressSessionAsync(int splitId)
+{
+    var startUtc = DateTime.UtcNow.AddMinutes(-48);   // realistic duration in the summary
+    var session = await db.StartSessionAsync(splitId, startUtc);
+    var entries = await db.GetSessionEntriesAsync(session.Id);
+
+    foreach (var entry in entries)
+    {
+        var exercise = (await db.GetExerciseAsync(entry.ExerciseId))!;
+        var eff = EffectiveExerciseSettings.Resolve(exercise, settings);
+        entry.WeightKg = entry.SuggestedWeightKg ?? startWeights[exercise.PresetKey!];
+
+        // First (counting) set decides the mark; later sets fatigue by 1-2 reps.
+        var first = exercise.PresetKey switch
+        {
+            "lat_pulldown" or "rowing"   => eff.RepMax + 2,   // above range -> Up
+            "lateral_raise"              => eff.RepMin - 2,   // below range -> Down
+            _                            => eff.RepMin + 2,   // inside range -> Keep
+        };
+        first = Math.Max(1, first);
+        var set2 = Math.Max(1, first - 1);
+        var set3 = Math.Max(1, set2 - 1);
+        entry.RepsPerSet = RepsSerializer.Serialize([first, set2, set3]);
+
+        ProgressionEngine.ApplyAutoMark(entry, eff);
+        await db.SaveEntryAsync(entry);
+    }
+    // Deliberately NOT completed — stays in progress so the Finish button works and the
+    // home screen offers to resume it.
+    Console.WriteLine("In-progress Upper Body session added (started ~48 min ago).");
+}
 
 async Task SimulateSessionAsync(int splitId, DateTime startUtc)
 {
