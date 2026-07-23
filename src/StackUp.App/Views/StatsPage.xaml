@@ -5,18 +5,27 @@
              xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.Maui;assembly=LiveChartsCore.SkiaSharpView.Maui"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:strings="clr-namespace:StackUp.App.Resources.Strings"
+             xmlns:controls="clr-namespace:StackUp.App.Controls"
              x:Class="StackUp.App.Views.StatsPage"
              x:DataType="vm:StatsViewModel"
-             Title="{x:Static strings:AppStrings.Tab_Stats}">
+             Title="{x:Static strings:AppStrings.Tab_Stats}"
+             Shell.NavBarIsVisible="False">
 
-    <ContentPage.ToolbarItems>
-        <ToolbarItem Text="{x:Static strings:AppStrings.Stats_Filter}" Command="{Binding ToggleFilterCommand}" />
-    </ContentPage.ToolbarItems>
+    <Grid RowDefinitions="Auto,Auto,Auto,*" Padding="16,16,16,0" RowSpacing="10">
 
-    <Grid RowDefinitions="Auto,Auto,*" Padding="16,8,16,0" RowSpacing="10">
+        <!-- Header with the filter toggle (was a toolbar item before the nav bar went away) -->
+        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+            <controls:PageHeader Title="{x:Static strings:AppStrings.Tab_Stats}"
+                                 Subtitle="{x:Static strings:AppStrings.Header_StatsSubtitle}" />
+            <Button Grid.Column="1"
+                    Text="{x:Static strings:AppStrings.Stats_Filter}"
+                    HeightRequest="40" CornerRadius="10" Padding="16,0"
+                    VerticalOptions="Start"
+                    Command="{Binding ToggleFilterCommand}" />
+        </Grid>
 
         <!-- Range selection -->
-        <HorizontalStackLayout Spacing="8" HorizontalOptions="Center">
+        <HorizontalStackLayout Grid.Row="1" Spacing="8" HorizontalOptions="Center">
             <Button Text="{x:Static strings:AppStrings.Stats_Range3M}" WidthRequest="72" HeightRequest="40" CornerRadius="10" Padding="0"
                     Command="{Binding SetRangeCommand}" CommandParameter="0" />
             <Button Text="{x:Static strings:AppStrings.Stats_Range1Y}" WidthRequest="72" HeightRequest="40" CornerRadius="10" Padding="0"
@@ -26,7 +35,7 @@
         </HorizontalStackLayout>
 
         <!-- Filter panel: choose which exercises are charted (all on by default) -->
-        <Border Grid.Row="1" Style="{StaticResource Card}" IsVisible="{Binding IsFilterOpen}">
+        <Border Grid.Row="2" Style="{StaticResource Card}" IsVisible="{Binding IsFilterOpen}">
             <VerticalStackLayout Spacing="4" BindableLayout.ItemsSource="{Binding FilterItems}">
                 <BindableLayout.ItemTemplate>
                     <DataTemplate x:DataType="vm:StatFilterItemViewModel">
@@ -41,7 +50,7 @@
         </Border>
 
         <!-- One chart card per visible exercise -->
-        <ScrollView Grid.Row="2">
+        <ScrollView Grid.Row="3">
             <VerticalStackLayout Spacing="12" Padding="0,0,0,16"
                                  BindableLayout.ItemsSource="{Binding Cards}">
                 <BindableLayout.ItemTemplate>

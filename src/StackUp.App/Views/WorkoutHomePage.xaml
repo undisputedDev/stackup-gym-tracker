@@ -3,14 +3,19 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:StackUp.App.ViewModels"
              xmlns:strings="clr-namespace:StackUp.App.Resources.Strings"
+             xmlns:controls="clr-namespace:StackUp.App.Controls"
              x:Class="StackUp.App.Views.WorkoutHomePage"
              x:DataType="vm:WorkoutHomeViewModel"
-             Title="{x:Static strings:AppStrings.Tab_Workout}">
+             Title="{x:Static strings:AppStrings.Tab_Workout}"
+             Shell.NavBarIsVisible="False">
 
-    <Grid RowDefinitions="Auto,Auto,Auto,*" Padding="16" RowSpacing="12">
+    <Grid RowDefinitions="Auto,Auto,Auto,Auto,*" Padding="16" RowSpacing="12">
+
+        <controls:PageHeader Title="{x:Static strings:AppStrings.Tab_Workout}"
+                             Subtitle="{x:Static strings:AppStrings.Header_WorkoutSubtitle}" />
 
         <!-- Resume banner -->
-        <Border Style="{StaticResource Card}"
+        <Border Grid.Row="1" Style="{StaticResource Card}"
                 IsVisible="{Binding HasInProgress}"
                 BackgroundColor="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource Tertiary}}">
             <Border.GestureRecognizers>
@@ -26,16 +31,16 @@
             </Grid>
         </Border>
 
-        <Label Grid.Row="1"
+        <Label Grid.Row="2"
                Text="{Binding MomentumText}"
                Style="{StaticResource Hint}"
                HorizontalOptions="Center" />
 
-        <Label Grid.Row="2" Text="{x:Static strings:AppStrings.Home_StartASession}" Style="{StaticResource SectionTitle}" />
+        <Label Grid.Row="3" Text="{x:Static strings:AppStrings.Home_StartASession}" Style="{StaticResource SectionTitle}" />
 
         <!-- One card per split; long-press (or mouse-drag) to reorder -->
         <CollectionView x:Name="SplitsCollection"
-                        Grid.Row="3"
+                        Grid.Row="4"
                         ItemsSource="{Binding Splits}"
                         CanReorderItems="True"
                         ReorderCompleted="OnSplitsReorderCompleted"

@@ -6,11 +6,16 @@
              xmlns:strings="clr-namespace:StackUp.App.Resources.Strings"
              x:Class="StackUp.App.Views.SettingsPage"
              x:DataType="vm:SettingsViewModel"
-             Title="{x:Static strings:AppStrings.Tab_Settings}">
+             Title="{x:Static strings:AppStrings.Tab_Settings}"
+             Shell.NavBarIsVisible="False">
 
-    <Grid>
-    <ScrollView>
-        <VerticalStackLayout Padding="16" Spacing="12">
+    <Grid RowDefinitions="Auto,*">
+    <controls:PageHeader Margin="16,16,16,0"
+                         Title="{x:Static strings:AppStrings.Tab_Settings}"
+                         Subtitle="{x:Static strings:AppStrings.Header_SettingsSubtitle}" />
+
+    <ScrollView Grid.Row="1">
+        <VerticalStackLayout Padding="16,12,16,16" Spacing="12">
 
             <Label Text="{x:Static strings:AppStrings.Settings_Units}" Style="{StaticResource SectionTitle}" />
             <Border Style="{StaticResource Card}">
@@ -74,7 +79,8 @@
     </ScrollView>
 
     <!-- Re-openable "how progression works" overlay -->
-    <controls:ProgressionExplainerView IsVisible="{Binding IsExplainerVisible}"
+    <controls:ProgressionExplainerView Grid.RowSpan="2"
+                                       IsVisible="{Binding IsExplainerVisible}"
                                        CloseCommand="{Binding CloseExplainerCommand}" />
     </Grid>
 </ContentPage>

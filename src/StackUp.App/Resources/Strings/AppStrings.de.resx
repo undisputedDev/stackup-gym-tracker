@@ -19,6 +19,12 @@
   <data name="Tab_Stats" xml:space="preserve"><value>Statistik</value></data>
   <data name="Tab_Settings" xml:space="preserve"><value>Einstellungen</value></data>
 
+  <!-- Page header subtitles -->
+  <data name="Header_WorkoutSubtitle" xml:space="preserve"><value>Wähl deinen Trainingstag und leg los.</value></data>
+  <data name="Header_SplitsSubtitle" xml:space="preserve"><value>Deine Trainingstage und ihre Übungen.</value></data>
+  <data name="Header_StatsSubtitle" xml:space="preserve"><value>Dein Fortschritt, Übung für Übung.</value></data>
+  <data name="Header_SettingsSubtitle" xml:space="preserve"><value>Einheiten, Progression und deine Daten.</value></data>
+
   <!-- Common -->
   <data name="Common_OK" xml:space="preserve"><value>OK</value></data>
   <data name="Common_Cancel" xml:space="preserve"><value>Abbrechen</value></data>

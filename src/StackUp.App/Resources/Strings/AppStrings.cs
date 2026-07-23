@@ -19,6 +19,12 @@ public static class AppStrings
     public static string Tab_Stats => Get(nameof(Tab_Stats));
     public static string Tab_Settings => Get(nameof(Tab_Settings));
 
+    // Page header subtitles
+    public static string Header_WorkoutSubtitle => Get(nameof(Header_WorkoutSubtitle));
+    public static string Header_SplitsSubtitle => Get(nameof(Header_SplitsSubtitle));
+    public static string Header_StatsSubtitle => Get(nameof(Header_StatsSubtitle));
+    public static string Header_SettingsSubtitle => Get(nameof(Header_SettingsSubtitle));
+
     // Common
     public static string Common_OK => Get(nameof(Common_OK));
     public static string Common_Cancel => Get(nameof(Common_Cancel));
