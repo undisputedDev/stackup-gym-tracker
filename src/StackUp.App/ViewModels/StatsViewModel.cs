@@ -86,6 +86,25 @@ public partial class StatsViewModel : ObservableObject
         HasCards = Cards.Count > 0;
     }
 
+    /// <summary>Axis density per range: 3M → biweekly day labels, 1Y → ~2-month names, All → derived from data span.</summary>
+    private (long MinStep, string DateFormat) GetAxisScale(List<DateTimePoint> points)
+    {
+        switch (RangeIndex)
+        {
+            case 0:
+                return (TimeSpan.FromDays(14).Ticks, "dd.MM.");
+            case 1:
+                return (TimeSpan.FromDays(61).Ticks, "MMM yy");
+            default:
+                var spanDays = points.Count >= 2 ? (points[^1].DateTime - points[0].DateTime).TotalDays : 0;
+                if (spanDays <= 100)
+                    return (TimeSpan.FromDays(14).Ticks, "dd.MM.");
+                if (spanDays <= 500)
+                    return (TimeSpan.FromDays(61).Ticks, "MMM yy");
+                return (TimeSpan.FromDays(Math.Ceiling(spanDays / 6)).Ticks, "MMM yy"); // ~6 labels
+        }
+    }
+
     private ExerciseStatCardViewModel BuildCard(Exercise exercise, List<ExerciseHistoryPoint> history)
     {
         var isWeight = exercise.TrackingType == TrackingType.WeightBased;
@@ -102,6 +121,7 @@ public partial class StatsViewModel : ObservableObject
         var accent = new SKColor(0x2E, 0x6E, 0x62);
         var unitLabel = isWeight ? UnitConverter.UnitLabel(_unit) : "reps";
         var latest = points.Count > 0 ? $"{points[^1].Value:0.##} {unitLabel}" : "no data yet";
+        var (minStep, dateFormat) = GetAxisScale(points);
 
         return new ExerciseStatCardViewModel
         {
@@ -126,9 +146,9 @@ public partial class StatsViewModel : ObservableObject
             [
                 new Axis
                 {
-                    Labeler = v => new DateTime((long)Math.Max(0, v)).ToString("dd.MM."),
+                    Labeler = v => new DateTime((long)Math.Max(0, v)).ToString(dateFormat),
                     UnitWidth = TimeSpan.FromDays(1).Ticks,
-                    MinStep = TimeSpan.FromDays(14).Ticks,
+                    MinStep = minStep,
                     LabelsPaint = new SolidColorPaint(SKColors.Gray),
                     TextSize = 11,
                 },

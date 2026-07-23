@@ -490,10 +490,10 @@
         </Setter>
     </Style>
 
-    <!-- Subtle secondary text -->
+    <!-- Subtle secondary text (light mode needs the darker gray for bright-light readability) -->
     <Style TargetType="Label" x:Key="Hint">
         <Setter Property="FontSize" Value="13" />
-        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray400}}" />
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
     </Style>
 
 </ResourceDictionary>
