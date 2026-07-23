@@ -1,4 +1,4 @@
-// Fills a Simple Gym Diary database with realistic demo history:
+// Fills a StackUp (Simple Gym Diary) database with realistic demo history:
 // one Upper Body + one Lower Body session per week over ~3 months,
 // driven through the real AppDatabase/ProgressionEngine flow so
 // suggestions, markings and history stay consistent.
@@ -14,7 +14,7 @@ using SimpleGymDiary.Core.Progression;
 var dbPath = args.Length > 0
     ? args[0]
     : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-        "User Name", "com.simplegymdiary.app", "Data", "gymdiary.db3");
+        "User Name", "com.stackupgym.app", "Data", "gymdiary.db3");
 
 Console.WriteLine($"Target DB: {dbPath}");
 Directory.CreateDirectory(Path.GetDirectoryName(dbPath)!);

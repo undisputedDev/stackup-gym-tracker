@@ -1,4 +1,8 @@
-# Simple Gym Diary — project notes for Claude
+# StackUp (Simple Gym Diary) — project notes for Claude
+
+App brand: **StackUp**; store listing title "StackUp – Simple Gym Diary";
+ApplicationId `com.stackupgym.app` (permanent once uploaded to Play). Code/solution
+names stay `SimpleGymDiary.*` — brand and code names are deliberately decoupled.
 
 Workout tracker (.NET MAUI, net10.0) whose key feature is auto-progression: reps vs. a
 target range produce an up/down/keep marking per exercise; the next session auto-suggests
@@ -39,7 +43,7 @@ Windows head: launch exe, then drive it without stealing focus using `tools/uia/
 (buttons/tabs), `setvalue.ps1 -EditIndex N -Value X` (entries by index),
 `pick.ps1 -ItemName "..."` (combo boxes). Crash diagnosis: DEBUG handler in
 `Platforms/Windows/App.xaml.cs` writes `crash.log` to the app data dir
-(`%LOCALAPPDATA%\User Name\com.simplegymdiary.app\Data\`).
+(`%LOCALAPPDATA%\User Name\com.stackupgym.app\Data\`).
 
 Android emulator (`fmc_pixel`): screenshot via `adb shell screencap -p /sdcard/shot.png`
 then `adb pull` (PowerShell `>` redirect corrupts binary). Taps: `adb shell input tap`.

@@ -27,11 +27,11 @@
 		       <MauiXaml Update="MyPage.xaml" Inflator="Runtime" /> (force runtime inflation) -->
 		<MauiXamlInflator>SourceGen</MauiXamlInflator>
 
-		<!-- Display name -->
-		<ApplicationTitle>Simple Gym Diary</ApplicationTitle>
+		<!-- Display name (store listing title: "StackUp – Simple Gym Diary") -->
+		<ApplicationTitle>StackUp</ApplicationTitle>
 
-		<!-- App Identifier -->
-		<ApplicationId>com.simplegymdiary.app</ApplicationId>
+		<!-- App Identifier — PERMANENT once first uploaded to the Play Console -->
+		<ApplicationId>com.stackupgym.app</ApplicationId>
 
 		<!-- Versions -->
 		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>

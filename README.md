@@ -1,6 +1,7 @@
-# Simple Gym Diary
+# StackUp — Simple Gym Diary
 
-A minimal, no-nonsense workout tracker for Android and iOS (.NET MAUI). Replaces the
+A minimal, no-nonsense workout tracker for Android and iOS (.NET MAUI). The name nods
+to the machine weight stack you pin — and to stacking up more of it over time. Replaces the
 paper-notebook workflow: log your working weight (or reps) per exercise, the app marks
 each exercise up/down/keep against a target rep range and auto-suggests the adjusted
 weight next session.

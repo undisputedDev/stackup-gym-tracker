@@ -112,12 +112,12 @@ public partial class SettingsViewModel : ObservableObject
     // TODO before store release: replace with the dedicated feedback address.
     private const string FeedbackAddress = "feedback-address-not-set@example.com";
 
-    public string VersionText => $"Simple Gym Diary {AppInfo.Current.VersionString}";
+    public string VersionText => $"StackUp {AppInfo.Current.VersionString}";
 
     [RelayCommand]
     private async Task SendFeedbackAsync()
     {
-        var subject = "Simple Gym Diary — Feedback";
+        var subject = "StackUp — Feedback";
         try
         {
             await Email.Default.ComposeAsync(new EmailMessage { Subject = subject, To = [FeedbackAddress] });
