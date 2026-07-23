@@ -18,7 +18,8 @@
         <Label Text="Exercises (in workout order)" Style="{StaticResource SectionTitle}" />
 
         <!-- Long-press (or mouse-drag) a row to reorder -->
-        <CollectionView Grid.Row="1"
+        <CollectionView x:Name="ExercisesCollection"
+                        Grid.Row="1"
                         ItemsSource="{Binding Exercises}"
                         CanReorderItems="True"
                         ReorderCompleted="OnExercisesReorderCompleted"

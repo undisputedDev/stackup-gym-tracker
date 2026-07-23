@@ -10,6 +10,9 @@ public partial class WorkoutHomePage : ContentPage
     {
         InitializeComponent();
         BindingContext = _vm = vm;
+#if ANDROID
+        Controls.DragLift.Enable(SplitsCollection);
+#endif
     }
 
     protected override async void OnAppearing()

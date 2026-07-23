@@ -33,7 +33,8 @@
         <Label Grid.Row="2" Text="Start a session" Style="{StaticResource SectionTitle}" />
 
         <!-- One card per split; long-press (or mouse-drag) to reorder -->
-        <CollectionView Grid.Row="3"
+        <CollectionView x:Name="SplitsCollection"
+                        Grid.Row="3"
                         ItemsSource="{Binding Splits}"
                         CanReorderItems="True"
                         ReorderCompleted="OnSplitsReorderCompleted"

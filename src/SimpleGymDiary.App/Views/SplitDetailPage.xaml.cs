@@ -10,6 +10,9 @@ public partial class SplitDetailPage : ContentPage
     {
         InitializeComponent();
         BindingContext = _vm = vm;
+#if ANDROID
+        Controls.DragLift.Enable(ExercisesCollection);
+#endif
     }
 
     protected override async void OnAppearing()
