@@ -2,10 +2,12 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:StackUp.App.ViewModels"
+             xmlns:controls="clr-namespace:StackUp.App.Controls"
              x:Class="StackUp.App.Views.SettingsPage"
              x:DataType="vm:SettingsViewModel"
              Title="Settings">
 
+    <Grid>
     <ScrollView>
         <VerticalStackLayout Padding="16" Spacing="12">
 
@@ -52,6 +54,12 @@
                 </Picker>
             </Border>
 
+            <Label Text="Help" Style="{StaticResource SectionTitle}" />
+            <Button Text="How progression works"
+                    FontFamily="OpenSansSemibold"
+                    HeightRequest="52" CornerRadius="12"
+                    Command="{Binding ShowExplainerCommand}" />
+
             <Label Text="About" Style="{StaticResource SectionTitle}" />
             <Button Text="Send feedback"
                     FontFamily="OpenSansSemibold"
@@ -62,4 +70,9 @@
 
         </VerticalStackLayout>
     </ScrollView>
+
+    <!-- Re-openable "how progression works" overlay -->
+    <controls:ProgressionExplainerView IsVisible="{Binding IsExplainerVisible}"
+                                       CloseCommand="{Binding CloseExplainerCommand}" />
+    </Grid>
 </ContentPage>

@@ -99,6 +99,31 @@ public partial class SessionViewModel : ObservableObject
                 continue;
             Entries.Add(new SessionEntryViewModel(_db, entry, exercise, settings, isEditable: !IsReadOnly));
         }
+
+        // First-ever session screen: explain the arrow system once.
+        if (!IsReadOnly && !settings.HasSeenProgressionExplainer)
+            IsExplainerVisible = true;
+    }
+
+    // ---- Progression explainer ----
+
+    [ObservableProperty]
+    public partial bool IsExplainerVisible { get; set; }
+
+    [RelayCommand]
+    private void ShowExplainer() => IsExplainerVisible = true;
+
+    [RelayCommand]
+    private async Task CloseExplainerAsync()
+    {
+        IsExplainerVisible = false;
+        // Flag is set on dismiss, not on show — if the process dies first, it shows again.
+        var settings = await _db.GetSettingsAsync();
+        if (!settings.HasSeenProgressionExplainer)
+        {
+            settings.HasSeenProgressionExplainer = true;
+            await _db.SaveSettingsAsync(settings);
+        }
     }
 
     [RelayCommand]
@@ -209,6 +234,7 @@ public partial class SessionEntryViewModel : ObservableObject
         MarkGlyph = "=";
         MarkColor = Colors.Gray;
         StripeColor = Colors.Transparent;
+        ConsequenceText = "";
         foreach (var reps in RepsSerializer.Parse(entry.RepsPerSet))
             Sets.Add(new SetViewModel(this, reps));
 
@@ -262,6 +288,44 @@ public partial class SessionEntryViewModel : ObservableObject
 
     public ObservableCollection<SetViewModel> Sets { get; } = [];
 
+    // ---- Live consequence hint ----
+
+    /// <summary>"16 reps → next time 62,5 kg ▲" — shows what the current mark means, colored like the mark.</summary>
+    [ObservableProperty]
+    public partial string ConsequenceText { get; set; }
+
+    [ObservableProperty]
+    public partial bool IsConsequenceVisible { get; set; }
+
+    private void RefreshConsequenceHint()
+    {
+        // Historical cards already show suggested + actual; a first-ever weight session has no baseline.
+        if (!IsEditable || !HasLoggedData || (IsWeightBased && Entry.WeightKg is null))
+        {
+            ConsequenceText = "";
+            IsConsequenceVisible = false;
+            return;
+        }
+
+        var next = ProgressionEngine.SuggestNext(Exercise, _eff, Entry, Sets.Count);
+        var counting = ProgressionEngine.CountingReps(RepsSerializer.Parse(Entry.RepsPerSet), _eff.Rule);
+        var prefix = counting is { } r ? $"{r} reps → " : ""; // manual-mark-only: no reps to cite
+
+        ConsequenceText = (IsWeightBased, Entry.Mark) switch
+        {
+            (true, Mark.Up) when next.WeightKg is { } up =>
+                $"{prefix}next time {UnitConverter.Format(up, _unit)} {UnitLabel} ▲",
+            (true, Mark.Down) when next.WeightKg is { } down =>
+                $"{prefix}next time {UnitConverter.Format(down, _unit)} {UnitLabel} ▼",
+            (true, _) =>
+                $"{prefix}{UnitConverter.Format(Entry.WeightKg!.Value, _unit)} {UnitLabel} stays ▬",
+            (false, Mark.Up) => $"{prefix}next time aim for {next.TargetReps} ▲",
+            (false, Mark.Down) => $"{prefix}next time aim for {next.TargetReps} ▼",
+            (false, _) => $"{prefix}aim for {next.TargetReps} again ▬",
+        };
+        IsConsequenceVisible = true;
+    }
+
     // ---- Weight ----
 
     [ObservableProperty]
@@ -274,6 +338,7 @@ public partial class SessionEntryViewModel : ObservableObject
         Entry.WeightKg = UnitConverter.TryParseFlexible(value, out var display)
             ? UnitConverter.DisplayToKg(display, _unit)
             : null;
+        RefreshConsequenceHint();
         Persist();
     }
 
@@ -294,6 +359,7 @@ public partial class SessionEntryViewModel : ObservableObject
         _loading = true; // don't double-persist via OnWeightTextChanged
         WeightText = UnitConverter.Format(next, _unit);
         _loading = false;
+        RefreshConsequenceHint();
         Persist();
     }
 
@@ -390,6 +456,7 @@ public partial class SessionEntryViewModel : ObservableObject
         };
         IsManualMark = Entry.MarkIsManual;
         StripeColor = HasLoggedData ? MarkColor : Colors.Transparent;
+        RefreshConsequenceHint();
     }
 
     private void Persist() => _ = _db.SaveEntryAsync(Entry);

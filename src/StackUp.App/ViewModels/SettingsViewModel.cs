@@ -109,6 +109,17 @@ public partial class SettingsViewModel : ObservableObject
             _ = _db.SaveSettingsAsync(_settings);
     }
 
+    // ---- Progression explainer (re-openable; the one-time flag is only set on the session screen) ----
+
+    [ObservableProperty]
+    public partial bool IsExplainerVisible { get; set; }
+
+    [RelayCommand]
+    private void ShowExplainer() => IsExplainerVisible = true;
+
+    [RelayCommand]
+    private void CloseExplainer() => IsExplainerVisible = false;
+
     // TODO before store release: replace with the dedicated feedback address.
     private const string FeedbackAddress = "feedback-address-not-set@example.com";
 

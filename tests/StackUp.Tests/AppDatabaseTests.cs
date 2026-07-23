@@ -219,6 +219,20 @@ public sealed class AppDatabaseTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task ExplainerFlag_DefaultsFalse_AndRoundTrips()
+    {
+        var db = await CreateAsync();
+        var settings = await db.GetSettingsAsync();
+        Assert.False(settings.HasSeenProgressionExplainer);
+
+        settings.HasSeenProgressionExplainer = true;
+        await db.SaveSettingsAsync(settings);
+
+        var reloaded = await db.GetSettingsAsync();
+        Assert.True(reloaded.HasSeenProgressionExplainer);
+    }
+
+    [Fact]
     public async Task IsVisibleInStats_DefaultsTrue_AndPersists()
     {
         var db = await CreateAsync();

@@ -72,6 +72,12 @@ public class AppDatabase
             await AddColumnIfMissingAsync(db, "AppSettings", "ReviewRequestCount", "INTEGER NOT NULL DEFAULT 0");
             await AddColumnIfMissingAsync(db, "AppSettings", "LastReviewRequestUtc", "INTEGER");
         },
+
+        // v5: one-time "how progression works" explainer flag
+        async db =>
+        {
+            await AddColumnIfMissingAsync(db, "AppSettings", "HasSeenProgressionExplainer", "INTEGER NOT NULL DEFAULT 0");
+        },
     ];
 
     private static async Task AddColumnIfMissingAsync(SQLiteAsyncConnection db, string table, string column, string definition)

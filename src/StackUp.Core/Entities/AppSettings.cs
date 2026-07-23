@@ -30,4 +30,7 @@ public class AppSettings
     public int ReviewRequestCount { get; set; }
 
     public DateTime? LastReviewRequestUtc { get; set; }
+
+    /// <summary>Whether the one-time "how progression works" overlay has been dismissed.</summary>
+    public bool HasSeenProgressionExplainer { get; set; }
 }
