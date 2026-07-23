@@ -182,6 +182,62 @@ tells you what to lift next.
 
 > Char counts: the short description above is 79/80. If you edit it, keep it ≤80.
 
+### German listing text (for the DE localization of the listing)
+
+Add these under Play Console → Main store listing → **Manage translations → German**.
+Wording uses the app's own in-app German terms (Trainingssplit, Vorschlag, Wdh., ▲▬▼).
+
+**App name** (≤30 chars):
+```
+StackUp – Gym Tracker
+```
+
+**Short description** (≤80 chars):
+```
+Tracke dein Training. Es erkennt, wann du mehr Gewicht auflegen solltest.
+```
+
+**Full description** (≤4000 chars):
+```
+StackUp ist ein minimalistischer, unkomplizierter Gym-Tracker, der das Notizbuch ersetzt.
+Trag dein Arbeitsgewicht und deine Wiederholungen pro Übung ein — StackUp denkt für dich mit,
+was als Nächstes dran ist.
+
+DIE KERNIDEE: AUTOMATISCHE PROGRESSION
+Nach jedem Satz trägst du die geschafften Wiederholungen ein. StackUp vergleicht sie mit
+deinem Zielbereich und markiert jede Übung:
+  ▲ HOCH — über dem Bereich: nächstes Mal mehr Gewicht
+  ▬ HALTEN — im Bereich: Gewicht bleibt
+  ▼ RUNTER — darunter: nächstes Mal weniger Gewicht
+Beim nächsten Training dieses Splits sind deine Vorschläge schon angepasst. Keine Tabellen,
+kein Raten.
+
+FÜR DEN TRAININGSALLTAG GEMACHT
+• Starte eine Session für einen Split (Ober-/Unterkörper, Push/Pull/Beine, Ganzkörper oder
+  deinen eigenen) — die Gewichte vom letzten Mal sind schon vorgeladen.
+• Alles wird sofort beim Tippen gespeichert — kein Speichern-Knopf. Anruf mitten im Satz und
+  App zu? Deine Session ist genau da, wo du aufgehört hast.
+• Tippe auf eine Markierung, um sie von Hand zu überschreiben.
+
+FUNKTIONEN
+• Vorgefertigte Splits und eine Bibliothek mit 20 Übungen samt Bewegungs-Icons — voll anpassbar
+• Gewichtsbasiertes (Maschine, Langhantel) und wiederholungsbasiertes (Körpergewicht) Tracking
+• Globale Standards plus Übungs-Überschreibungen für Zielbereich, Schrittweite und Satzzählung
+• Fortschritts-Diagramme pro Übung, über 3 Monate / 1 Jahr / gesamte Zeit
+• Anzeige in kg oder lbs
+
+PRIVAT VON GRUND AUF
+• Kein Konto, keine Anmeldung
+• Keine Werbung, kein Tracking, keine Analyse
+• Funktioniert komplett offline — deine Daten bleiben auf deinem Gerät
+• Kostenlos
+
+Einfach und erwachsen: keine Pausen-Timer, kein Social Feed, keine Gamification. Nur ein
+ehrliches Logbuch, das dir sagt, was du als Nächstes heben solltest.
+```
+
+> The German short description above is ~72/80 chars. Keep any edit ≤80.
+
 ### Graphics assets (exact sizes Google requires)
 
 | Asset | Size / format | Notes |
