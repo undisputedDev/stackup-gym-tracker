@@ -13,67 +13,67 @@
         <ToolbarItem Text="Delete" Command="{Binding ArchiveSplitCommand}" Order="Secondary" />
     </ContentPage.ToolbarItems>
 
-    <Grid>
-        <ScrollView>
-            <VerticalStackLayout Padding="16,16,16,96" Spacing="12">
+    <Grid RowDefinitions="Auto,*" Padding="16" RowSpacing="10">
 
-            <Label Text="Exercises (in workout order)" Style="{StaticResource SectionTitle}" />
+        <Label Text="Exercises (in workout order)" Style="{StaticResource SectionTitle}" />
 
-            <VerticalStackLayout Spacing="10" BindableLayout.ItemsSource="{Binding Exercises}">
-                <BindableLayout.ItemTemplate>
-                    <DataTemplate x:DataType="entities:Exercise">
-                        <Border Style="{StaticResource Card}" Padding="12">
-                            <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto" ColumnSpacing="4">
-                                <Image Source="{Binding IconKey, StringFormat='icon_{0}.png'}"
-                                       WidthRequest="22" HeightRequest="22"
-                                       Margin="4,0,8,0"
-                                       VerticalOptions="Center">
-                                    <Image.Behaviors>
-                                        <toolkit:IconTintColorBehavior TintColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
-                                    </Image.Behaviors>
-                                </Image>
-                                <Label Grid.Column="1" Text="{Binding Name}" FontSize="16" VerticalOptions="Center">
-                                    <Label.GestureRecognizers>
-                                        <TapGestureRecognizer
-                                            Command="{Binding EditExerciseCommand, Source={RelativeSource AncestorType={x:Type vm:SplitDetailViewModel}}}"
-                                            CommandParameter="{Binding .}" />
-                                    </Label.GestureRecognizers>
-                                </Label>
-                                <Button Grid.Column="2" Text="↑" FontSize="16"
-                                        WidthRequest="40" HeightRequest="40" Padding="0" CornerRadius="10"
-                                        BackgroundColor="Transparent"
-                                        TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray300}}"
-                                        Command="{Binding MoveUpCommand, Source={RelativeSource AncestorType={x:Type vm:SplitDetailViewModel}}}"
+        <!-- Long-press (or mouse-drag) a row to reorder -->
+        <CollectionView Grid.Row="1"
+                        ItemsSource="{Binding Exercises}"
+                        CanReorderItems="True"
+                        ReorderCompleted="OnExercisesReorderCompleted"
+                        SelectionMode="None">
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Vertical" ItemSpacing="10" />
+            </CollectionView.ItemsLayout>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="entities:Exercise">
+                    <Border Style="{StaticResource Card}" Padding="12">
+                        <Grid ColumnDefinitions="Auto,Auto,*,Auto" ColumnSpacing="8">
+                            <Label Text="&#xE25D;"
+                                   FontFamily="MaterialIcons" FontSize="20"
+                                   VerticalOptions="Center"
+                                   TextColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}" />
+                            <Image Grid.Column="1"
+                                   Source="{Binding IconKey, StringFormat='icon_{0}.png'}"
+                                   WidthRequest="22" HeightRequest="22"
+                                   Margin="4,0,4,0"
+                                   VerticalOptions="Center">
+                                <Image.Behaviors>
+                                    <toolkit:IconTintColorBehavior TintColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                                </Image.Behaviors>
+                            </Image>
+                            <Label Grid.Column="2" Text="{Binding Name}" FontSize="16" VerticalOptions="Center">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer
+                                        Command="{Binding EditExerciseCommand, Source={RelativeSource AncestorType={x:Type vm:SplitDetailViewModel}}}"
                                         CommandParameter="{Binding .}" />
-                                <Button Grid.Column="3" Text="↓" FontSize="16"
-                                        WidthRequest="40" HeightRequest="40" Padding="0" CornerRadius="10"
-                                        BackgroundColor="Transparent"
-                                        TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray300}}"
-                                        Command="{Binding MoveDownCommand, Source={RelativeSource AncestorType={x:Type vm:SplitDetailViewModel}}}"
-                                        CommandParameter="{Binding .}" />
-                                <Button Grid.Column="4" Text="✕" FontSize="14"
-                                        WidthRequest="40" HeightRequest="40" Padding="0" CornerRadius="10"
-                                        BackgroundColor="Transparent"
-                                        TextColor="{StaticResource MarkDown}"
-                                        Command="{Binding RemoveExerciseCommand, Source={RelativeSource AncestorType={x:Type vm:SplitDetailViewModel}}}"
-                                        CommandParameter="{Binding .}" />
-                            </Grid>
-                        </Border>
-                    </DataTemplate>
-                </BindableLayout.ItemTemplate>
-                <BindableLayout.EmptyView>
-                    <Label Text="No exercises yet — add your first one below."
-                           Style="{StaticResource Hint}" HorizontalOptions="Center" Margin="0,24" />
-                </BindableLayout.EmptyView>
-            </VerticalStackLayout>
+                                </Label.GestureRecognizers>
+                            </Label>
+                            <Button Grid.Column="3" Text="✕" FontSize="14"
+                                    WidthRequest="40" HeightRequest="40" Padding="0" CornerRadius="10"
+                                    BackgroundColor="Transparent"
+                                    TextColor="{StaticResource MarkDown}"
+                                    Command="{Binding RemoveExerciseCommand, Source={RelativeSource AncestorType={x:Type vm:SplitDetailViewModel}}}"
+                                    CommandParameter="{Binding .}" />
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+            <CollectionView.Footer>
+                <Label Text="Hold and drag to reorder · tap a name to edit its settings."
+                       Style="{StaticResource Hint}" HorizontalTextAlignment="Center"
+                       Margin="0,12,0,96" />
+            </CollectionView.Footer>
+            <CollectionView.EmptyView>
+                <Label Text="No exercises yet — add your first one below."
+                       Style="{StaticResource Hint}" HorizontalOptions="Center" Margin="0,24" />
+            </CollectionView.EmptyView>
+        </CollectionView>
 
-            <Label Text="Tap an exercise name to edit its settings (rep range, increment)."
-                   Style="{StaticResource Hint}" HorizontalOptions="Center" />
-
-            </VerticalStackLayout>
-        </ScrollView>
-
-        <Button Style="{StaticResource Fab}"
+        <Button Grid.RowSpan="2"
+                Style="{StaticResource Fab}"
+                Margin="0,0,4,4"
                 SemanticProperties.Description="Add exercise"
                 Command="{Binding AddExerciseCommand}" />
     </Grid>

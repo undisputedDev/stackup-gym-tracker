@@ -17,4 +17,9 @@ public partial class WorkoutHomePage : ContentPage
         base.OnAppearing();
         await _vm.LoadAsync();
     }
+
+    private async void OnSplitsReorderCompleted(object? sender, EventArgs e)
+    {
+        await _vm.PersistSplitOrderAsync();
+    }
 }

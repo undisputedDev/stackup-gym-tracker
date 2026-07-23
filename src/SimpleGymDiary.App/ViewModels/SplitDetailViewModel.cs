@@ -81,25 +81,8 @@ public partial class SplitDetailViewModel : ObservableObject
         await SaveOrderAsync();
     }
 
-    [RelayCommand]
-    private async Task MoveUpAsync(Exercise exercise)
-    {
-        var i = Exercises.IndexOf(exercise);
-        if (i <= 0)
-            return;
-        Exercises.Move(i, i - 1);
-        await SaveOrderAsync();
-    }
-
-    [RelayCommand]
-    private async Task MoveDownAsync(Exercise exercise)
-    {
-        var i = Exercises.IndexOf(exercise);
-        if (i < 0 || i >= Exercises.Count - 1)
-            return;
-        Exercises.Move(i, i + 1);
-        await SaveOrderAsync();
-    }
+    /// <summary>Persists the list order after a drag-reorder (collection is already reordered).</summary>
+    public Task PersistOrderAsync() => SaveOrderAsync();
 
     [RelayCommand]
     private static async Task EditExerciseAsync(Exercise exercise) =>

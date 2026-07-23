@@ -105,6 +105,18 @@ public partial class WorkoutHomeViewModel : ObservableObject
         if (InProgressSession is not null)
             await Shell.Current.GoToAsync($"session?sessionId={InProgressSession.Id}");
     }
+
+    /// <summary>Persists the card order after a drag-reorder (collection is already reordered).</summary>
+    public async Task PersistSplitOrderAsync()
+    {
+        for (var i = 0; i < Splits.Count; i++)
+        {
+            if (Splits[i].Split.SortOrder == i)
+                continue;
+            Splits[i].Split.SortOrder = i;
+            await _db.SaveSplitAsync(Splits[i].Split);
+        }
+    }
 }
 
 public record SplitCardViewModel(

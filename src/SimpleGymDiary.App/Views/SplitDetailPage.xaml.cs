@@ -17,4 +17,9 @@ public partial class SplitDetailPage : ContentPage
         base.OnAppearing();
         await _vm.LoadAsync();
     }
+
+    private async void OnExercisesReorderCompleted(object? sender, EventArgs e)
+    {
+        await _vm.PersistOrderAsync();
+    }
 }
