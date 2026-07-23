@@ -99,7 +99,12 @@ public partial class SessionViewModel : ObservableObject
             var exercise = await _db.GetExerciseAsync(entry.ExerciseId);
             if (exercise is null)
                 continue;
-            Entries.Add(new SessionEntryViewModel(_db, entry, exercise, settings, isEditable: !IsReadOnly));
+            // History strictly before this session — a browsed historical session sees only its own past.
+            // Wider than the engine's window so "last time" still finds a performed result when the
+            // exercise sat untouched for a few sessions (the engine itself only looks at the newest ones).
+            var prior = await _db.GetRecentCompletedEntriesForExerciseAsync(
+                entry.ExerciseId, session.StartedAtUtc, limit: 10);
+            Entries.Add(new SessionEntryViewModel(_db, entry, exercise, settings, prior, isEditable: !IsReadOnly));
         }
 
         // First-ever session screen: explain the arrow system once.
@@ -213,6 +218,9 @@ public partial class SessionViewModel : ObservableObject
 
     public ObservableCollection<SummaryLine> SummaryLines { get; } = [];
 
+    /// <summary>"★ New best: …" lines — logged results that beat the exercise's all-time best.</summary>
+    public ObservableCollection<SummaryLine> PrLines { get; } = [];
+
     [RelayCommand]
     private async Task FinishAsync()
     {
@@ -239,6 +247,20 @@ public partial class SessionViewModel : ObservableObject
         if (SummaryLines.Count == 0 && logged.Count > 0)
             SummaryLines.Add(new SummaryLine("▬", Color.FromArgb("#8A8F98"), "All weights stay — solid session."));
 
+        // Personal records: one history query per logged exercise; the time filter
+        // excludes the session just completed (it's already CompletedAtUtc != null).
+        PrLines.Clear();
+        if (session is not null)
+        {
+            foreach (var e in logged)
+            {
+                var history = await _db.GetExerciseHistoryAsync(e.Entry.ExerciseId);
+                var text = e.BuildPrText(history.Where(h => h.StartedAtUtc < session.StartedAtUtc));
+                if (text is not null)
+                    PrLines.Add(new SummaryLine("★", Color.FromArgb("#C9A227"), text));
+            }
+        }
+
         IsSummaryVisible = true;
     }
 
@@ -261,6 +283,8 @@ public partial class SessionEntryViewModel : ObservableObject
     private readonly AppDatabase _db;
     private readonly EffectiveExerciseSettings _eff;
     private readonly WeightUnit _unit;
+    private readonly IReadOnlyList<SessionEntry> _prior;
+    private readonly SessionEntry[] _historyForNext;
     private bool _loading = true;
 
     public SessionEntry Entry { get; }
@@ -269,7 +293,8 @@ public partial class SessionEntryViewModel : ObservableObject
     /// <summary>False when the entry belongs to a completed session being browsed read-only.</summary>
     public bool IsEditable { get; }
 
-    public SessionEntryViewModel(AppDatabase db, SessionEntry entry, Exercise exercise, AppSettings settings, bool isEditable = true)
+    public SessionEntryViewModel(AppDatabase db, SessionEntry entry, Exercise exercise, AppSettings settings,
+        IReadOnlyList<SessionEntry>? priorEntries = null, bool isEditable = true)
     {
         _db = db;
         Entry = entry;
@@ -277,6 +302,12 @@ public partial class SessionEntryViewModel : ObservableObject
         IsEditable = isEditable;
         _unit = settings.Unit;
         _eff = EffectiveExerciseSettings.Resolve(exercise, settings);
+        _prior = priorEntries ?? [];
+        // Engine history window for "what happens next time": this entry + the sessions before it.
+        // Entry is mutable, so the array stays current as the user logs.
+        _historyForNext = new[] { entry }
+            .Concat(_prior.Take(ProgressionEngine.DeloadStreakLength - 1))
+            .ToArray();
 
         WeightText = entry.WeightKg is { } w ? UnitConverter.Format(w, _unit) : "";
         MarkGlyph = "=";
@@ -300,22 +331,53 @@ public partial class SessionEntryViewModel : ObservableObject
     /// <summary>True once any set has reps (or a manual mark was made) — drives stripe + summary.</summary>
     public bool HasLoggedData => Sets.Any(s => s.Reps > 0) || Entry.MarkIsManual;
 
+    /// <summary>Single code path for "what does the next session look like" — hint, summary, everything.</summary>
+    private Suggestion ComputeNextSuggestion() =>
+        ProgressionEngine.SuggestNext(Exercise, _eff, _historyForNext, Sets.Count);
+
     /// <summary>Summary line for the finish overlay; null when nothing changes next session.</summary>
     public SummaryLine? BuildSummaryLine()
     {
         if (!HasLoggedData || Entry.Mark == Mark.Keep)
             return null;
 
-        var next = ProgressionEngine.SuggestNext(Exercise, _eff, Entry, Sets.Count);
+        var next = ComputeNextSuggestion();
         string text;
         if (IsWeightBased && next.WeightKg is { } w && Entry.WeightKg is { } current)
+        {
             text = $"{Name}   {UnitConverter.Format(current, _unit)} → {UnitConverter.Format(w, _unit)} {UnitLabel}";
+            if (next.IsDeload)
+                text += " (deload)";
+        }
         else if (!IsWeightBased && next.TargetReps is { } reps)
+        {
             text = $"{Name}   aim for {reps} reps";
+        }
         else
+        {
             return null;
+        }
 
         return new SummaryLine(MarkGlyph, MarkColor, text);
+    }
+
+    /// <summary>"New best: Bench Press 45 kg" when this entry beats the prior all-time best; null otherwise.</summary>
+    public string? BuildPrText(IEnumerable<ExerciseHistoryPoint> priorPoints)
+    {
+        if (IsWeightBased)
+        {
+            if (Entry.WeightKg is not { } w || !Sets.Any(s => s.Reps > 0))
+                return null;
+            // No prior performed best -> no PR line (a first session shouldn't spam stars).
+            return PersonalRecords.BestWeight(priorPoints) is { } best && w > best
+                ? $"New best: {Name} {UnitConverter.Format(w, _unit)} {UnitLabel}"
+                : null;
+        }
+
+        var current = Sets.Count > 0 ? Sets.Max(s => s.Reps) : 0;
+        return current > 0 && PersonalRecords.BestSetReps(priorPoints) is { } bestReps && current > bestReps
+            ? $"New best: {Name} {current} reps"
+            : null;
     }
 
     public string TargetHint
@@ -325,13 +387,29 @@ public partial class SessionEntryViewModel : ObservableObject
             // Historical entries show the range that applied back then, not today's settings.
             var min = Entry.RepMinSnapshot ?? _eff.RepMin;
             var max = Entry.RepMaxSnapshot ?? _eff.RepMax;
-            var range = $"Target {min}–{max} reps";
+            var parts = new List<string> { $"Target {min}–{max}" };
             if (IsWeightBased && Entry.SuggestedWeightKg is { } sw)
-                return $"{range} · suggested {UnitConverter.Format(sw, _unit)} {UnitLabel}";
-            if (!IsWeightBased && Entry.SuggestedReps is { } sr)
-                return $"{range} · aim for {sr}";
-            return range;
+                parts.Add(Entry.IsDeloadSuggestion
+                    ? $"Deload {UnitConverter.Format(sw, _unit)} {UnitLabel}"
+                    : $"suggested {UnitConverter.Format(sw, _unit)} {UnitLabel}");
+            else if (!IsWeightBased && Entry.SuggestedReps is { } sr)
+                parts.Add($"aim for {sr}");
+            if (LastTimeText() is { } lt)
+                parts.Add(lt);
+            return string.Join(" · ", parts);
         }
+    }
+
+    /// <summary>"last 15/12/9 @ 60" from the most recent prior entry that was actually performed.</summary>
+    private string? LastTimeText()
+    {
+        var last = _prior.FirstOrDefault(p => RepsSerializer.Parse(p.RepsPerSet).Any(r => r > 0));
+        if (last is null)
+            return null;
+        var reps = string.Join("/", RepsSerializer.Parse(last.RepsPerSet).Where(r => r > 0));
+        return IsWeightBased && last.WeightKg is { } w
+            ? $"last {reps} @ {UnitConverter.Format(w, _unit)}"
+            : $"last {reps}";
     }
 
     public ObservableCollection<SetViewModel> Sets { get; } = [];
@@ -355,11 +433,13 @@ public partial class SessionEntryViewModel : ObservableObject
             return;
         }
 
-        var next = ProgressionEngine.SuggestNext(Exercise, _eff, Entry, Sets.Count);
+        var next = ComputeNextSuggestion();
         var counting = ProgressionEngine.CountingReps(RepsSerializer.Parse(Entry.RepsPerSet), _eff.Rule);
         var prefix = counting is { } r ? $"{r} reps → " : ""; // manual-mark-only: no reps to cite
 
-        ConsequenceText = (IsWeightBased, Entry.Mark) switch
+        ConsequenceText = next is { IsDeload: true, WeightKg: { } dw }
+            ? $"{prefix}deload to {UnitConverter.Format(dw, _unit)} {UnitLabel} ▼"
+            : (IsWeightBased, Entry.Mark) switch
         {
             (true, Mark.Up) when next.WeightKg is { } up =>
                 $"{prefix}next time {UnitConverter.Format(up, _unit)} {UnitLabel} ▲",

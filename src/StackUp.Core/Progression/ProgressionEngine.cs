@@ -51,12 +51,27 @@ public static class ProgressionEngine
             entry.Mark = entry.AutoMark;
     }
 
+    /// <summary>After this many consecutive ▼ sessions a deload reset replaces the plain decrement.</summary>
+    public const int DeloadStreakLength = 3;
+
+    /// <summary>Deload target: last weight × this factor, rounded to the exercise's increment.</summary>
+    public const double DeloadFactor = 0.9;
+
+    /// <summary>Rounds to the nearest multiple of the increment (midpoint away from zero); increment ≤ 0 passes through.</summary>
+    public static double RoundToIncrement(double kg, double increment) =>
+        increment > 0
+            ? Math.Round(Math.Round(kg / increment, MidpointRounding.AwayFromZero) * increment, 3)
+            : kg;
+
     /// <summary>
-    /// Suggests next-session values from the most recent completed entry for the exercise
+    /// Suggests next-session values from the recent completed entries for the exercise
     /// (exercise-scoped: the same exercise in two splits shares its progression).
     /// </summary>
-    public static Suggestion SuggestNext(Exercise exercise, EffectiveExerciseSettings eff, SessionEntry? last, int defaultSetCount)
+    /// <param name="history">Recent completed entries, newest first; [0] is the entry progression is computed from.</param>
+    public static Suggestion SuggestNext(Exercise exercise, EffectiveExerciseSettings eff,
+        IReadOnlyList<SessionEntry> history, int defaultSetCount)
     {
+        var last = history.Count > 0 ? history[0] : null;
         var lastReps = last is null ? [] : RepsSerializer.Parse(last.RepsPerSet);
         var hasData = last is not null &&
                       (lastReps.Any(r => r > 0) || (exercise.TrackingType == TrackingType.WeightBased && last.WeightKg is not null));
@@ -72,6 +87,18 @@ public static class ProgressionEngine
         if (exercise.TrackingType == TrackingType.WeightBased)
         {
             var w = last!.WeightKg ?? 0;
+
+            // Three ▼ in a row: another −increment clearly isn't enough — suggest a real
+            // reset instead. Effective marks drive the streak, so manual overrides count;
+            // a skipped session defaults to Keep and (intentionally) breaks it.
+            if (last.Mark == Mark.Down && history.Count >= DeloadStreakLength
+                && history.Take(DeloadStreakLength).All(e => e.Mark == Mark.Down))
+            {
+                var deload = Math.Max(0, Math.Min(RoundToIncrement(w * DeloadFactor, eff.WeightIncrementKg),
+                                                  w - eff.WeightIncrementKg)); // never weaker than a normal ▼ step
+                return new Suggestion(WeightKg: deload, TargetReps: null, SetCount: setCount, IsDeload: true);
+            }
+
             w = last.Mark switch
             {
                 Mark.Up => w + eff.WeightIncrementKg,
@@ -81,7 +108,8 @@ public static class ProgressionEngine
             return new Suggestion(WeightKg: w, TargetReps: null, SetCount: setCount);
         }
 
-        // Rep-based: adjust the target reps instead of a weight.
+        // Rep-based: adjust the target reps instead of a weight. No deload — the decline
+        // is already gentle (×0.9 of a typical rep count ≈ one increment anyway).
         var r = CountingReps(lastReps, eff.Rule) ?? eff.RepMin;
         r = last!.Mark switch
         {

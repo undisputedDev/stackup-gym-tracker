@@ -50,4 +50,7 @@ public class SessionEntry
     public int? RepMinSnapshot { get; set; }
 
     public int? RepMaxSnapshot { get; set; }
+
+    /// <summary>True when the suggested weight was a deload reset (snapshot; drives the "Deload" hint).</summary>
+    public bool IsDeloadSuggestion { get; set; }
 }

@@ -219,6 +219,67 @@ public sealed class AppDatabaseTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task RecentCompletedEntries_NewestFirst_RespectsLimitAndBefore()
+    {
+        var db = await CreateAsync();
+        var splits = await db.GetSplitsAsync();
+        var latId = (await db.GetSplitExercisesAsync(splits[0].Id))[0].Id;
+
+        foreach (var (day, weight) in new[] { (1, 60.0), (4, 62.5), (8, 65.0), (12, 67.5) })
+        {
+            var s = await db.StartSessionAsync(splits[0].Id, new DateTime(2026, 7, day, 17, 0, 0, DateTimeKind.Utc));
+            var e = (await db.GetSessionEntriesAsync(s.Id))[0];
+            e.WeightKg = weight;
+            e.RepsPerSet = "12,11,10";
+            await db.SaveEntryAsync(e);
+            await db.CompleteSessionAsync(s.Id, new DateTime(2026, 7, day, 18, 0, 0, DateTimeKind.Utc));
+        }
+
+        // Window before session 4 (day 12): sessions 3, 2, 1 — newest first, limited to 3.
+        var recent = await db.GetRecentCompletedEntriesForExerciseAsync(
+            latId, new DateTime(2026, 7, 12, 17, 0, 0, DateTimeKind.Utc), 3);
+        Assert.Equal([65.0, 62.5, 60.0], recent.Select(e => e.WeightKg!.Value).ToArray());
+
+        // Tighter limit still returns the newest ones.
+        var one = await db.GetRecentCompletedEntriesForExerciseAsync(
+            latId, new DateTime(2026, 7, 12, 17, 0, 0, DateTimeKind.Utc), 1);
+        Assert.Equal(65.0, Assert.Single(one).WeightKg);
+    }
+
+    [Fact]
+    public async Task FullLoop_ThreeDownSessions_FourthGetsDeloadSuggestion()
+    {
+        var db = await CreateAsync();
+        var splits = await db.GetSplitsAsync();
+        var settings = await db.GetSettingsAsync();
+        var upperId = splits[0].Id;
+
+        // Session 1: user types 60 kg but only manages 5 reps (below range -> Down).
+        // Sessions 2-3: accept the prefilled suggestion (57.5, then 55), still Down.
+        for (var i = 0; i < 3; i++)
+        {
+            var s = await db.StartSessionAsync(upperId, new DateTime(2026, 7, 1 + i * 4, 17, 0, 0, DateTimeKind.Utc));
+            var e = (await db.GetSessionEntriesAsync(s.Id))[0];
+            Assert.False(e.IsDeloadSuggestion); // never a deload while the streak builds
+            if (i == 0)
+                e.WeightKg = 60;
+            e.RepsPerSet = "5,5,5";
+            var exercise = (await db.GetExerciseAsync(e.ExerciseId))!;
+            ProgressionEngine.ApplyAutoMark(e, EffectiveExerciseSettings.Resolve(exercise, settings));
+            await db.SaveEntryAsync(e);
+            Assert.Equal(Mark.Down, e.Mark);
+            await db.CompleteSessionAsync(s.Id, new DateTime(2026, 7, 1 + i * 4, 18, 0, 0, DateTimeKind.Utc));
+        }
+
+        // Session 4: last weight 55 -> 55 × 0.9 = 49.5 -> nearest 2.5-multiple 50 (< plain ▼ 52.5).
+        var s4 = await db.StartSessionAsync(upperId, new DateTime(2026, 7, 15, 17, 0, 0, DateTimeKind.Utc));
+        var entry4 = (await db.GetSessionEntriesAsync(s4.Id))[0];
+        Assert.Equal(50, entry4.SuggestedWeightKg);
+        Assert.Equal(50, entry4.WeightKg);
+        Assert.True(entry4.IsDeloadSuggestion);
+    }
+
+    [Fact]
     public async Task DeleteSession_RemovesEntries_AndProgressionFallsBack()
     {
         var db = await CreateAsync();

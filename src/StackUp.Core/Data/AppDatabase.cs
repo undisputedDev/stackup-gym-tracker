@@ -82,6 +82,12 @@ public class AppDatabase
         {
             await AddColumnIfMissingAsync(db, "AppSettings", "HasSeenProgressionExplainer", "INTEGER NOT NULL DEFAULT 0");
         },
+
+        // v6: deload-suggestion snapshot on session entries
+        async db =>
+        {
+            await AddColumnIfMissingAsync(db, "SessionEntry", "IsDeloadSuggestion", "INTEGER NOT NULL DEFAULT 0");
+        },
     ];
 
     private static async Task AddColumnIfMissingAsync(SQLiteAsyncConnection db, string table, string column, string definition)
@@ -323,6 +329,20 @@ public class AppDatabase
         .FirstOrDefault();
 
     /// <summary>
+    /// Most recent completed entries for an exercise strictly before the given session start,
+    /// newest first — the progression engine's history window (deload detection, "last time").
+    /// </summary>
+    public Task<List<SessionEntry>> GetRecentCompletedEntriesForExerciseAsync(int exerciseId, DateTime beforeStartedUtc, int limit) =>
+        _db.QueryAsync<SessionEntry>(
+            """
+            SELECT se.* FROM SessionEntry se
+            JOIN Session s ON s.Id = se.SessionId
+            WHERE se.ExerciseId = ? AND s.CompletedAtUtc IS NOT NULL AND s.StartedAtUtc < ?
+            ORDER BY s.StartedAtUtc DESC
+            LIMIT ?
+            """, exerciseId, beforeStartedUtc, limit);
+
+    /// <summary>
     /// Creates a session for a split with one entry per exercise, snapshotting
     /// next-session suggestions from each exercise's last completed entry.
     /// </summary>
@@ -338,8 +358,8 @@ public class AppDatabase
         {
             var exercise = exercises[i];
             var eff = EffectiveExerciseSettings.Resolve(exercise, settings);
-            var last = await GetLastCompletedEntryForExerciseAsync(exercise.Id);
-            var suggestion = ProgressionEngine.SuggestNext(exercise, eff, last, settings.DefaultSetCount);
+            var recent = await GetRecentCompletedEntriesForExerciseAsync(exercise.Id, nowUtc, ProgressionEngine.DeloadStreakLength);
+            var suggestion = ProgressionEngine.SuggestNext(exercise, eff, recent, settings.DefaultSetCount);
 
             await _db.InsertAsync(new SessionEntry
             {
@@ -353,6 +373,7 @@ public class AppDatabase
                 ExerciseNameSnapshot = exercise.Name,
                 RepMinSnapshot = eff.RepMin,
                 RepMaxSnapshot = eff.RepMax,
+                IsDeloadSuggestion = suggestion.IsDeload,
             });
         }
 

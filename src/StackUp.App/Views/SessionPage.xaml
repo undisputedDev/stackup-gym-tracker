@@ -213,6 +213,20 @@
                                TextColor="{StaticResource MarkDown}" />
                     </HorizontalStackLayout>
 
+                    <!-- Personal records (empty collection renders zero height) -->
+                    <VerticalStackLayout Spacing="8" BindableLayout.ItemsSource="{Binding PrLines}">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="vm:SummaryLine">
+                                <HorizontalStackLayout Spacing="10">
+                                    <Label Text="{Binding Glyph}" TextColor="{Binding GlyphColor}"
+                                           FontSize="14" VerticalOptions="Center" />
+                                    <Label Text="{Binding Text}" FontSize="15" FontFamily="OpenSansSemibold"
+                                           VerticalOptions="Center" />
+                                </HorizontalStackLayout>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+
                     <BoxView HeightRequest="1"
                              Color="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray600}}" />
 
