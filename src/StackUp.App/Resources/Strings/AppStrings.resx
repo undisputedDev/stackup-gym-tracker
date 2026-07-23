@@ -153,6 +153,9 @@
 
   <!-- Backup & restore -->
   <data name="Backup_ShareTitle" xml:space="preserve"><value>StackUp backup</value></data>
+  <data name="Backup_ShareOption" xml:space="preserve"><value>Share</value></data>
+  <data name="Backup_SaveOption" xml:space="preserve"><value>Save to device</value></data>
+  <data name="Backup_SavedFormat" xml:space="preserve"><value>Backup saved: {0}</value></data>
   <data name="Backup_PickerTitle" xml:space="preserve"><value>Choose a StackUp backup</value></data>
   <data name="Backup_InvalidFile" xml:space="preserve"><value>The selected file is not a valid StackUp backup.</value></data>
   <data name="Backup_NewerVersion" xml:space="preserve"><value>This backup was created by a newer version of StackUp. Update the app first.</value></data>

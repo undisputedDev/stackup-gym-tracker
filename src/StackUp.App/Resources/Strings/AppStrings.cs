@@ -153,6 +153,9 @@ public static class AppStrings
 
     // Backup & restore
     public static string Backup_ShareTitle => Get(nameof(Backup_ShareTitle));
+    public static string Backup_ShareOption => Get(nameof(Backup_ShareOption));
+    public static string Backup_SaveOption => Get(nameof(Backup_SaveOption));
+    public static string Backup_SavedFormat => Get(nameof(Backup_SavedFormat));
     public static string Backup_PickerTitle => Get(nameof(Backup_PickerTitle));
     public static string Backup_InvalidFile => Get(nameof(Backup_InvalidFile));
     public static string Backup_NewerVersion => Get(nameof(Backup_NewerVersion));
