@@ -139,7 +139,7 @@
   <data name="Settings_UnitKg" xml:space="preserve"><value>Kilograms (kg)</value></data>
   <data name="Settings_UnitLbs" xml:space="preserve"><value>Pounds (lbs)</value></data>
   <data name="Settings_ProgressionDefaults" xml:space="preserve"><value>Progression defaults</value></data>
-  <data name="Settings_CountingSetQuestion" xml:space="preserve"><value>Which set decides the arrow?</value></data>
+  <data name="Settings_CountingSetQuestion" xml:space="preserve"><value>Which set counts for progression?</value></data>
   <data name="Settings_FirstSet" xml:space="preserve"><value>First set</value></data>
   <data name="Settings_LastSet" xml:space="preserve"><value>Last set</value></data>
   <data name="Settings_BestSet" xml:space="preserve"><value>Best set</value></data>

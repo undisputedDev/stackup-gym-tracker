@@ -139,7 +139,7 @@
   <data name="Settings_UnitKg" xml:space="preserve"><value>Kilogramm (kg)</value></data>
   <data name="Settings_UnitLbs" xml:space="preserve"><value>Pfund (lbs)</value></data>
   <data name="Settings_ProgressionDefaults" xml:space="preserve"><value>Progressions-Standards</value></data>
-  <data name="Settings_CountingSetQuestion" xml:space="preserve"><value>Welcher Satz entscheidet den Pfeil?</value></data>
+  <data name="Settings_CountingSetQuestion" xml:space="preserve"><value>Welcher Satz zählt für die Progression?</value></data>
   <data name="Settings_FirstSet" xml:space="preserve"><value>Erster Satz</value></data>
   <data name="Settings_LastSet" xml:space="preserve"><value>Letzter Satz</value></data>
   <data name="Settings_BestSet" xml:space="preserve"><value>Bester Satz</value></data>
