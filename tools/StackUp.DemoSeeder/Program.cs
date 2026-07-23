@@ -7,9 +7,19 @@
 // Default path: the Windows head's AppData database. The DB file is
 // deleted and recreated (seeded splits + demo sessions).
 
+using System.Globalization;
 using StackUp.Core.Data;
 using StackUp.Core.Enums;
 using StackUp.Core.Progression;
+
+// Optional culture override so demo data can be seeded in a specific language
+// (preset exercise/split names are localized). Usage: STACKUP_SEED_CULTURE=en or de.
+if (Environment.GetEnvironmentVariable("STACKUP_SEED_CULTURE") is { Length: > 0 } cultureName)
+{
+    var culture = CultureInfo.GetCultureInfo(cultureName);
+    CultureInfo.CurrentUICulture = culture;
+    CultureInfo.CurrentCulture = culture;
+}
 
 var dbPath = args.Length > 0
     ? args[0]
@@ -28,16 +38,19 @@ var db = new AppDatabase(dbPath);
 await db.InitializeAsync();
 var settings = await db.GetSettingsAsync();
 var splits = await db.GetSplitsAsync();
-var upper = splits.First(s => s.Name == "Upper Body");
-var lower = splits.First(s => s.Name == "Lower Body");
+// Match by PresetKey, not display name — split names are localized (e.g. "Oberkörper"
+// on a de-DE machine), so matching the English name fails under German culture.
+var upper = splits.First(s => s.PresetKey == "upper_body");
+var lower = splits.First(s => s.PresetKey == "lower_body");
 
 // Sensible starting working weights (kg) for a beginner-ish 3-month run.
+// Keyed by PresetKey (culture-proof — exercise display names are localized).
 var startWeights = new Dictionary<string, double>
 {
-    ["Lat Pulldown"] = 50, ["Rowing"] = 45, ["Bench Press"] = 40,
-    ["Butterfly"] = 35, ["Lateral Raise"] = 10,
-    ["Lower Back"] = 40, ["Leg Press"] = 100, ["Leg Extension"] = 40,
-    ["Hamstrings"] = 35, ["Hip Thrust"] = 60,
+    ["lat_pulldown"] = 50, ["rowing"] = 45, ["bench_press"] = 40,
+    ["butterfly"] = 35, ["lateral_raise"] = 10,
+    ["lower_back"] = 40, ["leg_press"] = 100, ["leg_extension"] = 40,
+    ["hamstrings"] = 35, ["hip_thrust"] = 60,
 };
 
 // Per-exercise simulated "first set reps" state.
@@ -72,7 +85,7 @@ async Task SimulateSessionAsync(int splitId, DateTime startUtc)
         var eff = EffectiveExerciseSettings.Resolve(exercise, settings);
 
         // Weight: engine suggestion if available, else the starting weight.
-        entry.WeightKg = entry.SuggestedWeightKg ?? startWeights[exercise.Name];
+        entry.WeightKg = entry.SuggestedWeightKg ?? startWeights[exercise.PresetKey!];
 
         // First-set reps: continue from last time, +1..2 per week of adaptation.
         if (!firstSetReps.TryGetValue(exercise.Id, out var first))
