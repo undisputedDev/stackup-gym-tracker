@@ -12,5 +12,9 @@ obj/
 *.aab
 *.ipa
 
+# Signing keystores — NEVER commit. Keep the upload keystore backed up outside the repo.
+*.keystore
+*.jks
+
 # Test results
 TestResults/

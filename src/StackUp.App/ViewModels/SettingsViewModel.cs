@@ -219,8 +219,7 @@ public partial class SettingsViewModel : ObservableObject
     [RelayCommand]
     private void CloseExplainer() => IsExplainerVisible = false;
 
-    // TODO before store release: replace with the dedicated feedback address.
-    private const string FeedbackAddress = "feedback-address-not-set@example.com";
+    private const string FeedbackAddress = "feedback.stackup@undisputed-dev.com";
 
     public string VersionText => $"StackUp {AppInfo.Current.VersionString}";
 

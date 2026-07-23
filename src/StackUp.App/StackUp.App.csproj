@@ -44,8 +44,22 @@
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">15.0</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
+		<!-- minSdk 21. targetSdk is left at the .NET 10 Android workload default (API 36),
+		     which satisfies Google Play's "recent target API" requirement. Do not pin it lower. -->
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
 		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
+	</PropertyGroup>
+
+	<!-- Release signing for the Play Store. Produces a signed .aab (Android App Bundle).
+	     The keystore path/alias/passwords are NOT stored here — pass them on the command line:
+	       dotnet publish src/StackUp.App -f net10.0-android -c Release \
+	         -p:AndroidKeyStore=true \
+	         -p:AndroidSigningKeyStore=<path-to>.keystore \
+	         -p:AndroidSigningKeyAlias=stackup \
+	         -p:AndroidSigningStorePass=<pass> -p:AndroidSigningKeyPass=<pass>
+	     See docs/play-store-release.md. -->
+	<PropertyGroup Condition="'$(Configuration)' == 'Release' And $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+		<AndroidPackageFormat>aab</AndroidPackageFormat>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -57,8 +71,7 @@
 
 		<!-- Images -->
 		<MauiImage Include="Resources\Images\*" />
-		<MauiImage Update="Resources\Images\dotnet_bot.png" Resize="True" BaseSize="300,185" />
-		
+
 		<!-- Custom Fonts -->
 		<MauiFont Include="Resources\Fonts\*" />
 
